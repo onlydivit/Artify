@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Now - Artify</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar h1 {
+            font-size: 1.5rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        .main-content {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .booking-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .booking-container h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .flash-message {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .monument-grid {
+            display: none;
+        }
+
+        .monument-card {
+            display: none;
+        }
+
+        .qr-container {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .qr-code {
+            max-width: 200px;
+            margin: 1rem auto;
+            padding: 1rem;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .qr-code img {
+            width: 100%;
+            height: auto;
+        }
+
+        .booking-details {
+            margin-top: 1rem;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 5px;
+        }
+
+        .booking-details h3 {
+            margin-bottom: 1rem;
+        }
+
+        .booking-details p {
+            margin-bottom: 0.5rem;
+        }
+
+        .download-btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 1rem;
+            transition: background 0.3s;
+        }
+
+        .download-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .student-checkbox {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s;
+        }
+
+        .student-checkbox:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .student-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #764ba2;
+        }
+
+        .student-notice {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #ffd700;
+            padding: 1rem;
+            margin-top: 0.5rem;
+            font-size: 0.95rem;
+            color: white;
+            border-radius: 0 5px 5px 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .student-notice i {
+            color: #ffd700;
+            font-size: 1.2rem;
+        }
+
+        .discount-badge {
+            background: #ffd700;
+            color: #764ba2;
+            padding: 0.3rem 0.6rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: auto;
+        }
+
+        .visitor-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            transition: transform 0.3s;
+        }
+
+        .visitor-section:hover {
+            transform: translateY(-2px);
+        }
+
+        .visitor-section h4 {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .visitor-fields {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .time-slot {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .time-slot:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .time-slot.selected {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        .time-slot.unavailable {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .time-slot p {
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .lang-select {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.3rem;
+            border-radius: 5px;
+            margin-left: 1.5rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .lang-select:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .lang-select option {
+            background: #764ba2;
+            color: white;
+        }
+
+        .additional-services {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .additional-services h3 {
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .service-option {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s;
+        }
+
+        .service-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .service-option input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #764ba2;
+        }
+
+        .service-notice {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 0.5rem;
+        }
+
+        .price-badge {
+            background: #ffd700;
+            color: #764ba2;
+            padding: 0.3rem 0.6rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: auto;
+        }
+
+        .pricing-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-info h3 {
+            color: #ffd700;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 0.8rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .price-item:last-child {
+            border-bottom: none;
+        }
+
+        .price-item span:last-child {
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .student-price {
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 5px;
+        }
+
+        .student-price small {
+            display: block;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+        }
+
+        .parking-rates {
+            text-align: right;
+        }
+
+        .parking-rates small {
+            display: block;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
+        .see-more-btn {
+            background: none;
+            border: none;
+            color: white;
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+        }
+
+        .monument-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .monument-details {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 80%;
+            max-height: 80%;
+            overflow: auto;
+        }
+
+        .monument-details h2 {
+            margin-bottom: 1rem;
+        }
+
+        .detail-section {
+            margin-bottom: 1rem;
+        }
+
+        .monument-details h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .monument-details p {
+            margin-bottom: 0.5rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nationality-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .nationality-options {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .nationality-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .nationality-option input[type="radio"] {
+            cursor: pointer;
+        }
+
+        .id-input {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .id-input.active {
+            display: block;
+        }
+
+        .id-input input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .id-input input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .fees-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .fees-info p {
+            margin: 0.5rem 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .fees-info .fee-amount {
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.8rem center;
+            background-size: 1.5em;
+        }
+
+        .form-group select:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+        }
+
+        .form-group select option {
+            background: #764ba2;
+            color: white;
+            padding: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>Artify</h1>
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}" data-translate="nav-home">Home</a>
+            <a href="{{ url_for('booking') }}" data-translate="nav-book">Book Now</a>
+            <a href="{{ url_for('parking') }}" data-translate="nav-parking">Parking</a>
+            <select id="language" onchange="changeLanguage(this.value)" class="lang-select">
+                <option value="en">Lang: EN</option>
+                <option value="hi">हिंदी</option>
+                <option value="fr">Français</option>
+                <option value="zh">中文</option>
+                <option value="mr">मराठी</option>
+            </select>
+            <a href="{{ url_for('logout') }}" data-translate="nav-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-message">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="booking-container">
+            <div class="booking-header">
+                <h2 data-translate="booking-title">Book Your Visit</h2>
+            </div>
+
+            {% if booking %}
+                <div class="qr-container">
+                    <h3>Your Booking Confirmation</h3>
+                    <div class="qr-code">
+                        <img src="data:image/png;base64,{{ booking.qr_code }}" alt="Booking QR Code">
+                    </div>
+                    <div class="booking-details">
+                        <h3>Booking Details</h3>
+                        <p><strong>Name:</strong> {{ booking.name }}</p>
+                        <p><strong>Email:</strong> {{ booking.email }}</p>
+                        <p><strong>Monument:</strong> {{ booking.monument }}</p>
+                        <p><strong>Date:</strong> {{ booking.date }}</p>
+                        <p><strong>Booking ID:</strong> {{ bookings|length }}</p>
+                    </div>
+                    <a href="data:image/png;base64,{{ booking.qr_code }}" download="booking_qr.png" class="download-btn">Download QR Code</a>
+                </div>
+            {% else %}
+                <form method="POST" action="{{ url_for('payment_page') }}" id="bookingForm">
+                    <div class="pricing-info">
+                        <h3 data-translate="pricing-title">Pricing Information</h3>
+                        
+                        <div class="price-item student-price">
+                            <span data-translate="student-discount">Student Discount</span>
+                            <span>30% OFF</span>
+                            <small data-translate="student-id-notice">* Valid student ID required during visit</small>
+                        </div>
+                        <div class="price-item">
+                            <span data-translate="guide-fee">Tour Guide (optional)</span>
+                            <span>₹300</span>
+                        </div>
+                        <div class="price-item">
+                            <span data-translate="parking-fees">Parking Fees (if needed)</span>
+                            <div class="parking-rates">
+                                <small data-translate="parking-2w">2-wheeler: ₹30/4hrs</small>
+                                <small data-translate="parking-4w">4-wheeler: ₹50/4hrs</small>
+                                <small data-translate="parking-bus">Bus: ₹100/4hrs</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name" data-translate="primary-contact">Primary Contact Name</label>
+                        <input type="text" id="name" name="name" required placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="age" data-translate="age">Age</label>
+                        <input type="number" id="age" name="age" required min="1" max="120" placeholder="Enter your age">
+                        <div class="student-checkbox">
+                            <input type="checkbox" id="is_student" name="is_student">
+                            <label for="is_student" data-translate="student-status">I am a student</label>
+                            <span class="discount-badge">30% OFF</span>
+                        </div>
+                        <div class="student-notice" data-translate="student-notice">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Students receive a 30% discount with valid ID</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="monument" data-translate="select-monument">Select Monument</label>
+                        <select id="monument" name="monument" required onchange="updateFees()">
+                            <option value="" data-translate="choose-monument">Choose a monument</option>
+                            <option value="Taj Mahal">Taj Mahal</option>
+                            <option value="Red Fort">Red Fort</option>
+                            <option value="Qutub Minar">Qutub Minar</option>
+                            <option value="India Gate">India Gate</option>
+                            <option value="Lotus Temple">Lotus Temple</option>
+                            <option value="Jama Masjid">Jama Masjid</option>
+                            <option value="Akshardham Temple">Akshardham Temple</option>
+                            <option value="Raj Ghat">Raj Ghat</option>
+                            <option value="Jantar Mantar">Jantar Mantar</option>
+                            <option value="Rashtrapati Bhavan">Rashtrapati Bhavan</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="date" data-translate="visit-date">Visit Date</label>
+                        <input type="date" id="date" name="date" required onchange="updateTimeSlots()">
+                    </div>
+                    <div class="form-group">
+                        <label data-translate="time-slot">Select Time Slot</label>
+                        <div class="time-slots" id="timeSlots">
+                            <!-- Time slots will be populated dynamically -->
+                        </div>
+                        <input type="hidden" id="selected_time_slot" name="time_slot" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="visitors" data-translate="num-visitors">Number of Additional Visitors</label>
+                        <input type="number" id="visitors" name="visitors" min="0" max="10" value="0" onchange="generateVisitorFields()">
+                        <small>Not including primary contact (maximum 10 additional visitors)</small>
+                    </div>
+                    <div id="visitorDetails"></div>
+                    
+                    <div class="form-group">
+                        <label for="id_number">ID Number (Aadhar/Passport)</label>
+                        <input type="text" id="id_number" name="id_number" class="form-control" required 
+                               pattern="[0-9]{12}|[A-Za-z0-9]{8,12}" 
+                               title="Please enter a valid Aadhar (12 digits) or Passport number">
+                        <small class="form-text text-muted">Please enter your Aadhar (12 digits) or Passport number</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="camera_required">Do you need a camera?</label>
+                        <select id="camera_required" name="camera_required" required>
+                            <option value="no">No</option>
+                            <option value="yes">Yes</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="additional-services">
+                            <h3 data-translate="additional-services">Additional Services</h3>
+                            <div class="service-option">
+                                <input type="checkbox" id="need_parking" name="need_parking">
+                                <label for="need_parking" data-translate="need-parking">I need parking</label>
+                                <div class="service-notice">
+                                    <i class="fas fa-info-circle"></i> <span data-translate="parking-redirect">You will be redirected to parking booking after payment.</span>
+                                </div>
+                            </div>
+                            
+                            <div class="service-option">
+                                <input type="checkbox" id="need_guide" name="need_guide">
+                                <label for="need_guide" data-translate="need-guide">I want a tour guide</label>
+                                <span class="price-badge">₹300</span>
+                                <div class="service-notice">
+                                    <i class="fas fa-info-circle"></i> <span data-translate="guide-assign">Professional guide will be assigned on the day of visit.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Proceed to Payment</button>
+                </form>
+
+                <script>
+                    function selectMonument(monument) {
+                        document.getElementById('monument').value = monument;
+                    }
+
+                    function generateVisitorFields() {
+                        const numVisitors = parseInt(document.getElementById('visitors').value);
+                        const container = document.getElementById('visitorDetails');
+                        container.innerHTML = '';
+
+                        for (let i = 0; i < numVisitors; i++) {
+                            const visitorSection = document.createElement('div');
+                            visitorSection.className = 'visitor-section';
+                            visitorSection.innerHTML = `
+                                <h4>
+                                    <span data-translate="visitor">Visitor</span> ${i + 1}
+                                </h4>
+                                <div class="visitor-fields">
+                                    <div class="form-group">
+                                        <label for="visitor_name_${i}" data-translate="visitor-name">Full Name</label>
+                                        <input type="text" id="visitor_name_${i}" name="visitor_name_${i}" required data-translate="visitor-name-placeholder" placeholder="Enter visitor's name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="visitor_age_${i}" data-translate="visitor-age">Age</label>
+                                        <input type="number" id="visitor_age_${i}" name="visitor_age_${i}" required min="1" max="120" data-translate="visitor-age-placeholder" placeholder="Age">
+                                    </div>
+                                </div>
+                                <div class="student-checkbox">
+                                    <input type="checkbox" id="visitor_is_student_${i}" name="visitor_is_student_${i}">
+                                    <label for="visitor_is_student_${i}" data-translate="visitor-student">This visitor is a student</label>
+                                    <span class="discount-badge">30% OFF</span>
+                                </div>
+                                <div class="student-notice">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Students receive a 30% discount with valid ID</span>
+                                </div>
+                            `;
+                            container.appendChild(visitorSection);
+                        }
+                    }
+
+                    // Set minimum date to today
+                    const dateInput = document.getElementById('date');
+                    const today = new Date().toISOString().split('T')[0];
+                    dateInput.min = today;
+
+                    // Language translations
+                    const translations = {
+                        'en': {
+                            'booking-title': 'Book Your Visit',
+                            'booking-subtitle': 'Select your preferred monument and time slot',
+                            'select-monument': 'Select Monument',
+                            'monument-placeholder': 'Choose a monument',
+                            'choose-monument': 'Choose a monument',
+                            'monument-red-fort': 'Red Fort',
+                            'monument-qutub': 'Qutub Minar',
+                            'monument-india-gate': 'India Gate',
+                            'monument-taj': 'Taj Mahal',
+                            'monument-lotus': 'Lotus Temple',
+                            'monument-jama': 'Jama Masjid',
+                            'select-date': 'Select Date',
+                            'select-time': 'Select Time Slot',
+                            'choose-time': 'Choose a time slot',
+                            'time-9': '9:00 AM',
+                            'time-10': '10:00 AM',
+                            'time-11': '11:00 AM',
+                            'time-12': '12:00 PM',
+                            'time-13': '1:00 PM',
+                            'primary-contact': 'Primary Contact',
+                            'name-placeholder': 'Enter your name',
+                            'age': 'Age',
+                            'email': 'Email',
+                            'email-placeholder': 'Enter your email',
+                            'num-visitors': 'Number of Additional Visitors',
+                            'is-student': 'I am a student',
+                            'need-guide': 'I need a tour guide',
+                            'need-parking': 'I need parking',
+                            'proceed-payment': 'Proceed to Payment',
+                            'visitor-name': 'Visitor Name',
+                            'visitor-age': 'Visitor Age',
+                            'visitor-student': 'Is Student',
+                            'monument-taj-desc': 'Experience the wonder of the world\'s most beautiful monument',
+                            'monument-red-fort-desc': 'Explore the historic Mughal architecture',
+                            'monument-qutub-desc': 'Visit the world\'s tallest brick minaret',
+                            'pricing-title': 'Pricing Information',
+                            'entry-fee': 'Monument Entry Fee (per person)',
+                            'student-discount': 'Student Discount',
+                            'student-id-notice': '* Valid student ID required during visit',
+                            'guide-fee': 'Tour Guide (optional)',
+                            'parking-fees': 'Parking Fees (if needed)',
+                            'parking-2w': '2-wheeler: ₹30/4hrs',
+                            'parking-4w': '4-wheeler: ₹50/4hrs',
+                            'parking-bus': 'Bus: ₹100/4hrs',
+                            'additional-services': 'Additional Services',
+                            'parking-redirect': 'You will be redirected to parking booking after payment.',
+                            'guide-assign': 'Professional guide will be assigned on the day of visit.',
+                            'visitor': 'Visitor',
+                            'visitor-name-placeholder': 'Enter visitor\'s name',
+                            'visitor-age-placeholder': 'Age',
+                            'student-discount-notice': 'Students get 30% discount. Please carry student ID card during the visit.'
+                        },
+                        'hi': {
+                            'booking-title': 'अपनी यात्रा बुक करें',
+                            'booking-subtitle': 'अपना पसंदीदा स्मारक आणि वेळ स्लॉट चुनें',
+                            'select-monument': 'स्मारक चुनें',
+                            'monument-placeholder': 'स्मारक चुनें',
+                            'choose-monument': 'स्मारक चुनें',
+                            'monument-red-fort': 'लाल किला',
+                            'monument-qutub': 'कुतुब मीनार',
+                            'monument-india-gate': 'इंडिया गेट',
+                            'monument-taj': 'ताज महल',
+                            'monument-lotus': 'लोटस टेम्पल',
+                            'monument-jama': 'जामा मस्जिद',
+                            'select-date': 'दिनांक चुनें',
+                            'select-time': 'वेळ स्लॉट चुनें',
+                            'choose-time': 'वेळ स्लॉट चुनें',
+                            'time-9': 'सुबह 9:00',
+                            'time-10': 'सुबह 10:00',
+                            'time-11': 'सुबह 11:00',
+                            'time-12': 'दोपहर 12:00',
+                            'time-13': 'दोपहर 1:00',
+                            'primary-contact': 'प्राथमिक संपर्क',
+                            'name-placeholder': 'अपना नाव टाका',
+                            'age': 'वय',
+                            'email': 'ईमेल',
+                            'email-placeholder': 'आपला ईमेल टाका',
+                            'num-visitors': 'अतिरिक्त भेट देणाऱ्यांची संख्या',
+                            'is-student': 'मी विद्यार्थी आहे',
+                            'need-guide': 'मला टूर गाईड हवा',
+                            'need-parking': 'मला पार्किंग हवी',
+                            'proceed-payment': 'पेमेंट करा',
+                            'visitor-name': 'भेट देणाऱ्याचे नाव',
+                            'visitor-age': 'भेट देणाऱ्याचे वय',
+                            'visitor-student': 'विद्यार्थी आहे',
+                            'monument-taj-desc': 'दुनिया के सबसे सुंदर स्मारक का आनंद लें',
+                            'monument-red-fort-desc': 'ऐतिहासिक मुगल वास्तुकला का अन्वेषण करें',
+                            'monument-qutub-desc': 'दुनिया की सबसे ऊंची ईंट की मीनार देखें',
+                            'pricing-title': 'कीमत की जानकारी',
+                            'entry-fee': 'स्मारक प्रवेश शुल्क (प्रति व्यक्ति)',
+                            'student-discount': 'छात्र छूट',
+                            'student-id-notice': '* यात्रा के दौरान वैध छात्र पहचान पत्र आवश्यक',
+                            'guide-fee': 'टूर गाइड (वैकल्पिक)',
+                            'parking-fees': 'पार्किंग शुल्क (यदि आवश्यक)',
+                            'parking-2w': 'दोपहिया: ₹30/4 घंटे',
+                            'parking-4w': 'चार पहिया: ₹50/4 घंटे',
+                            'parking-bus': 'बस: ₹100/4 घंटे',
+                            'additional-services': 'अतिरिक्त सेवाएं',
+                            'parking-redirect': 'भुगतान के बाद आपको पार्किंग बुकिंग पर पुनर्निर्देशित किया जाएगा।',
+                            'guide-assign': 'यात्रा के दिन पेशेवर गाइड नियुक्त किया जाएगा।',
+                            'visitor': 'भेट देणारा',
+                            'visitor-name-placeholder': 'भेट देणाऱ्याचे नाव टाका',
+                            'visitor-age-placeholder': 'वय',
+                            'student-discount-notice': 'छात्रों को 30% सूट मिलती है। कृपया यात्रा के दौरान छात्र पहचान पत्र सोबत आणा.'
+                        },
+                        'fr': {
+                            'booking-title': 'Réserver Votre Visite',
+                            'booking-subtitle': 'Sélectionnez votre monument préféré et l\'horaire',
+                            'select-monument': 'Sélectionner le Monument',
+                            'monument-placeholder': 'Choisir un monument',
+                            'choose-monument': 'Choisir un monument',
+                            'monument-red-fort': 'Fort Rouge',
+                            'monument-qutub': 'Qutub Minar',
+                            'monument-india-gate': 'Porte de l\'Inde',
+                            'monument-taj': 'Taj Mahal',
+                            'monument-lotus': 'Temple du Lotus',
+                            'monument-jama': 'Mosquée Jama',
+                            'select-date': 'Sélectionner la Date',
+                            'select-time': 'Sélectionner l\'Horaire',
+                            'choose-time': 'Choisir un horaire',
+                            'time-9': '9:00 AM',
+                            'time-10': '10:00 AM',
+                            'time-11': '11:00 AM',
+                            'time-12': '12:00 PM',
+                            'time-13': '1:00 PM',
+                            'primary-contact': 'Contact Principal',
+                            'name-placeholder': 'Entrez votre nom',
+                            'age': 'Âge',
+                            'email': 'Email',
+                            'email-placeholder': 'Entrez votre email',
+                            'num-visitors': 'Nombre de Visiteurs Supplémentaires',
+                            'is-student': 'Je suis étudiant',
+                            'need-guide': 'J\'ai besoin d\'un guide',
+                            'need-parking': 'J\'ai besoin de parking',
+                            'proceed-payment': 'Procéder au Paiement',
+                            'visitor-name': 'Nom du Visiteur',
+                            'visitor-age': 'Âge du Visiteur',
+                            'visitor-student': 'Est Étudiant',
+                            'monument-taj-desc': 'Découvrez la merveille du plus beau monument du monde',
+                            'monument-red-fort-desc': 'Explorez l\'architecture moghole historique',
+                            'monument-qutub-desc': 'Visitez le plus haut minaret en briques du monde',
+                            'pricing-title': 'Informations sur les Prix',
+                            'entry-fee': 'Frais d\'entrée au monument (par personne)',
+                            'student-discount': 'Réduction Étudiante',
+                            'student-id-notice': '* Carte d\'étudiant valide requise pendant la visite',
+                            'guide-fee': 'Guide touristique (optionnel)',
+                            'parking-fees': 'Frais de stationnement (si nécessaire)',
+                            'parking-2w': '2-roues : ₹30/4h',
+                            'parking-4w': '4-roues : ₹50/4h',
+                            'parking-bus': 'Bus : ₹100/4h',
+                            'additional-services': 'Services Supplémentaires',
+                            'parking-redirect': 'Vous serez redirigé vers la réservation de stationnement après le paiement.',
+                            'guide-assign': 'Un guide professionnel sera assigné le jour de la visite.',
+                            'visitor': 'Visiteur',
+                            'visitor-name-placeholder': 'Entrez le nom du visiteur',
+                            'visitor-age-placeholder': 'Âge',
+                            'student-discount-notice': 'Les étudiants bénéficient d\'une réduction de 30%. Veuillez apporter votre carte d\'étudiant pendant la visite.'
+                        },
+                        'zh': {
+                            'booking-title': '预订您的访问',
+                            'booking-subtitle': '选择您喜欢的纪念碑和时间段',
+                            'select-monument': '选择纪念碑',
+                            'monument-placeholder': '选择纪念碑',
+                            'choose-monument': '选择纪念碑',
+                            'monument-red-fort': '红堡',
+                            'monument-qutub': '库杜布塔',
+                            'monument-india-gate': '印度门',
+                            'monument-taj': '泰姬陵',
+                            'monument-lotus': '莲花寺',
+                            'monument-jama': '贾玛清真寺',
+                            'select-date': '选择日期',
+                            'select-time': '选择时间段',
+                            'choose-time': '选择时间段',
+                            'time-9': '上午9:00',
+                            'time-10': '上午10:00',
+                            'time-11': '上午11:00',
+                            'time-12': '下午12:00',
+                            'time-13': '下午1:00',
+                            'primary-contact': '主要联系人',
+                            'name-placeholder': '输入您的姓名',
+                            'age': '年龄',
+                            'email': '电子邮件',
+                            'email-placeholder': '输入您的电子邮件',
+                            'num-visitors': '额外访客人数',
+                            'is-student': '我是学生',
+                            'need-guide': '我需要导游',
+                            'need-parking': '我需要停车',
+                            'proceed-payment': '继续付款',
+                            'visitor-name': '访客姓名',
+                            'visitor-age': '访客年龄',
+                            'visitor-student': '是学生',
+                            'monument-taj-desc': '体验世界上最美丽建筑的奇迹',
+                            'monument-red-fort-desc': '探索历史悠久的莫卧儿建筑',
+                            'monument-qutub-desc': '参观世界上最高的砖砌尖塔',
+                            'pricing-title': '价格信息',
+                            'entry-fee': '纪念碑入场费（每人）',
+                            'student-discount': '学生折扣',
+                            'student-id-notice': '* 参观时需出示有效学生证',
+                            'guide-fee': '导游（可选）',
+                            'parking-fees': '停车费（如需要）',
+                            'parking-2w': '两轮车：₹30/4小时',
+                            'parking-4w': '四轮车：₹50/4小时',
+                            'parking-bus': '公共汽车：₹100/4小时',
+                            'additional-services': '附加服务',
+                            'parking-redirect': '付款后您将被重定向到停车预订页面。',
+                            'guide-assign': '参观当天将安排专业导游。',
+                            'visitor': '访客',
+                            'visitor-name-placeholder': '输入访客姓名',
+                            'visitor-age-placeholder': '年龄',
+                            'student-discount-notice': '学生可享受30%折扣。参观时请携带学生证。'
+                        },
+                        'mr': {
+                            'booking-title': 'आपली भेट बुक करा',
+                            'booking-subtitle': 'आपला आवडता स्मारक आणि वेळ स्लॉट निवडा',
+                            'select-monument': 'स्मारक निवडा',
+                            'monument-placeholder': 'स्मारक निवडा',
+                            'choose-monument': 'स्मारक निवडा',
+                            'monument-red-fort': 'लाल किल्ला',
+                            'monument-qutub': 'कुतुब मिनार',
+                            'monument-india-gate': 'इंडिया गेट',
+                            'monument-taj': 'ताज महल',
+                            'monument-lotus': 'लोटस टेम्पल',
+                            'monument-jama': 'जामा मशीद',
+                            'select-date': 'दिनांक निवडा',
+                            'select-time': 'वेळ स्लॉट निवडा',
+                            'choose-time': 'वेळ स्लॉट निवडा',
+                            'time-9': 'सकाळी 9:00',
+                            'time-10': 'सकाळी 10:00',
+                            'time-11': 'सकाळी 11:00',
+                            'time-12': 'दुपारी 12:00',
+                            'time-13': 'दुपारी 1:00',
+                            'primary-contact': 'प्राथमिक संपर्क',
+                            'name-placeholder': 'आपले नाव टाका',
+                            'age': 'वय',
+                            'email': 'ईमेल',
+                            'email-placeholder': 'आपला ईमेल टाका',
+                            'num-visitors': 'अतिरिक्त भेट देणाऱ्यांची संख्या',
+                            'is-student': 'मी विद्यार्थी आहे',
+                            'need-guide': 'मला टूर गाईड हवा',
+                            'need-parking': 'मला पार्किंग हवी',
+                            'proceed-payment': 'पेमेंट करा',
+                            'visitor-name': 'भेट देणाऱ्याचे नाव',
+                            'visitor-age': 'भेट देणाऱ्याचे वय',
+                            'visitor-student': 'विद्यार्थी आहे',
+                            'monument-taj-desc': 'जगातील सर्वात सुंदर स्मारकाचा अनुभव घ्या',
+                            'monument-red-fort-desc': 'ऐतिहासिक मुघल वास्तुकलेचा शोध घ्या',
+                            'monument-qutub-desc': 'जगातील सर्वात उंच विटांची मिनार पहा',
+                            'pricing-title': 'किंमतीची माहिती',
+                            'entry-fee': 'स्मारक प्रवेश शुल्क (प्रति व्यक्ती)',
+                            'student-discount': 'विद्यार्थी सूट',
+                            'student-id-notice': '* भेटीदरम्यान वैध विद्यार्थी ओळखपत्र आवश्यक',
+                            'guide-fee': 'टूर गाईड (पर्यायी)',
+                            'parking-fees': 'पार्किंग शुल्क (आवश्यक असल्यास)',
+                            'parking-2w': 'दुपहिया: ₹30/4 तास',
+                            'parking-4w': 'चारपहिया: ₹50/4 तास',
+                            'parking-bus': 'बस: ₹100/4 तास',
+                            'additional-services': 'अतिरिक्त सेवा',
+                            'parking-redirect': 'पेमेंट नंतर तुम्हाला पार्किंग बुकिंगवर पुनर्निर्देशित केले जाईल.',
+                            'guide-assign': 'भेटीच्या दिवशी व्यावसायिक गाईड नियुक्त केला जाईल.',
+                            'visitor': 'भेट देणारा',
+                            'visitor-name-placeholder': 'भेट देणाऱ्याचे नाव टाका',
+                            'visitor-age-placeholder': 'वय',
+                            'student-discount-notice': 'विद्यार्थ्यांना 30% सूट मिळते. कृपया भेटीदरम्यान विद्यार्थी ओळखपत्र सोबत आणा.'
+                        }
+                    };
+
+                    function changeLanguage(lang) {
+                        const elements = document.querySelectorAll('[data-translate]');
+                        elements.forEach(element => {
+                            const key = element.getAttribute('data-translate');
+                            if (translations[lang] && translations[lang][key]) {
+                                if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                                    element.placeholder = translations[lang][key];
+                                } else {
+                                    element.textContent = translations[lang][key];
+                                }
+                            }
+                        });
+                        localStorage.setItem('selectedLanguage', lang);
+                    }
+
+                    // Apply translations on page load
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
+                        document.getElementById('language').value = savedLanguage;
+                        changeLanguage(savedLanguage);
+                    });
+
+                    async function updateTimeSlots() {
+                        const monument = document.getElementById('monument').value;
+                        const date = document.getElementById('date').value;
+                        
+                        if (!monument || !date) return;
+
+                        try {
+                            const response = await fetch(`/get_available_slots?monument=${monument}&date=${date}`);
+                            const slots = await response.json();
+                            
+                            const timeSlotsDiv = document.getElementById('timeSlots');
+                            timeSlotsDiv.innerHTML = '';
+                            
+                            slots.forEach(slot => {
+                                const slotDiv = document.createElement('div');
+                                slotDiv.className = `time-slot ${slot.available_slots > 0 ? '' : 'unavailable'}`;
+                                slotDiv.onclick = () => selectTimeSlot(slot.time_slot, slotDiv);
+                                
+                                slotDiv.innerHTML = `
+                                    <h4>${slot.time_slot}</h4>
+                                    <p>Available: ${slot.available_slots}</p>
+                                `;
+                                
+                                timeSlotsDiv.appendChild(slotDiv);
+                            });
+                        } catch (error) {
+                            console.error('Error fetching time slots:', error);
+                        }
+                    }
+
+                    function selectTimeSlot(slot, element) {
+                        if (element.classList.contains('unavailable')) return;
+                        
+                        document.querySelectorAll('.time-slot').forEach(el => {
+                            el.classList.remove('selected');
+                        });
+                        
+                        element.classList.add('selected');
+                        document.getElementById('selected_time_slot').value = slot;
+                    }
+
+                    // Add form validation
+                    document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        
+                        // Show loading state
+                        const submitBtn = this.querySelector('button[type="submit"]');
+                        const originalText = submitBtn.textContent;
+                        submitBtn.textContent = 'Processing...';
+                        submitBtn.disabled = true;
+
+                        try {
+                            // Get form data
+                            const formData = new FormData(this);
+                            const bookingData = {
+                                monument: formData.get('monument'),
+                                date: formData.get('date'),
+                                time_slot: formData.get('time_slot'),
+                                num_visitors: parseInt(formData.get('visitors')),
+                                need_guide: formData.get('need_guide') === 'on',
+                                need_parking: formData.get('need_parking') === 'on',
+                                is_student: formData.get('is_student') === 'on',
+                                id_number: formData.get('id_number'),
+                                camera_required: formData.get('camera_required') === 'on',
+                                name: formData.get('name'),
+                                email: formData.get('email'),
+                                age: parseInt(formData.get('age')),
+                                base_amount: 40, // Updated base amount
+                                final_amount: calculateFinalAmount(
+                                    parseInt(formData.get('visitors')),
+                                    formData.get('is_student') === 'on',
+                                    formData.get('need_guide') === 'on',
+                                    formData.get('camera_required') === 'on'
+                                )
+                            };
+
+                            // Validate required fields
+                            if (!bookingData.time_slot || !bookingData.id_number) {
+                                throw new Error('Please fill in all required fields');
+                            }
+
+                            // Calculate final amount
+                            if (bookingData.need_guide) {
+                                bookingData.final_amount += 50; // Updated guide fee
+                            }
+
+                            // Store booking data
+                            const response = await fetch('/store_booking', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify(bookingData)
+                            });
+
+                            const data = await response.json();
+                            if (!data.success) {
+                                throw new Error(data.error || 'Failed to store booking data');
+                            }
+
+                            // Redirect to payment page
+                            window.location.href = '/payment_page';
+
+                        } catch (error) {
+                            alert(error.message);
+                            submitBtn.textContent = originalText;
+                            submitBtn.disabled = false;
+                        }
+                    });
+
+                    function calculateFinalAmount(visitors, isStudent, needGuide, needCamera) {
+                        const baseAmount = 40; // Updated base amount
+                        let totalAmount = baseAmount * (visitors + 1); // +1 for primary contact
+                        
+                        // Apply student discount if applicable
+                        if (isStudent) {
+                            totalAmount -= (baseAmount * 0.3); // 30% discount
+                        }
+                        
+                        // Add guide fee if needed
+                        if (needGuide) {
+                            totalAmount += 50; // Updated guide fee
+                        }
+                        
+                        // Add camera fee if needed
+                        if (needCamera) {
+                            totalAmount += 50; // Updated camera fee
+                        }
+                        
+                        return totalAmount;
+                    }
+
+                    // Add confirmation dialog
+                    function showConfirmationDialog() {
+                        return new Promise((resolve) => {
+                            const dialog = document.createElement('div');
+                            dialog.className = 'confirmation-dialog';
+                            dialog.innerHTML = `
+                                <div class="dialog-content">
+                                    <h3>Confirm Booking</h3>
+                                    <p>Please review your booking details before proceeding to payment:</p>
+                                    <div class="booking-summary">
+                                        <p><strong>Monument:</strong> ${document.getElementById('monument').value}</p>
+                                        <p><strong>Date:</strong> ${document.getElementById('date').value}</p>
+                                        <p><strong>Time Slot:</strong> ${document.getElementById('selected_time_slot').value}</p>
+                                        <p><strong>Total Fee:</strong> ₹${document.getElementById('totalFee').textContent}</p>
+                                    </div>
+                                    <div class="dialog-buttons">
+                                        <button class="cancel-btn">Cancel</button>
+                                        <button class="confirm-btn">Confirm & Proceed to Payment</button>
+                                    </div>
+                                </div>
+                            `;
+                            document.body.appendChild(dialog);
+
+                            // Add styles
+                            const style = document.createElement('style');
+                            style.textContent = `
+                                .confirmation-dialog {
+                                    position: fixed;
+                                    top: 0;
+                                    left: 0;
+                                    width: 100%;
+                                    height: 100%;
+                                    background: rgba(0, 0, 0, 0.5);
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    z-index: 1000;
+                                }
+                                .dialog-content {
+                                    background: white;
+                                    padding: 2rem;
+                                    border-radius: 10px;
+                                    max-width: 500px;
+                                    width: 90%;
+                                }
+                                .dialog-content h3 {
+                                    margin-bottom: 1rem;
+                                    color: #333;
+                                }
+                                .booking-summary {
+                                    background: #f5f5f5;
+                                    padding: 1rem;
+                                    border-radius: 5px;
+                                    margin: 1rem 0;
+                                }
+                                .booking-summary p {
+                                    margin: 0.5rem 0;
+                                    color: #333;
+                                }
+                                .dialog-buttons {
+                                    display: flex;
+                                    justify-content: flex-end;
+                                    gap: 1rem;
+                                    margin-top: 1rem;
+                                }
+                                .dialog-buttons button {
+                                    padding: 0.5rem 1rem;
+                                    border: none;
+                                    border-radius: 5px;
+                                    cursor: pointer;
+                                }
+                                .cancel-btn {
+                                    background: #f44336;
+                                    color: white;
+                                }
+                                .confirm-btn {
+                                    background: #4CAF50;
+                                    color: white;
+                                }
+                            `;
+                            document.head.appendChild(style);
+
+                            // Add event listeners
+                            dialog.querySelector('.cancel-btn').addEventListener('click', () => {
+                                dialog.remove();
+                                style.remove();
+                                resolve(false);
+                            });
+
+                            dialog.querySelector('.confirm-btn').addEventListener('click', () => {
+                                dialog.remove();
+                                style.remove();
+                                resolve(true);
+                            });
+                        });
+                    }
+                    
+                    // Add real-time validation for email
+                    document.getElementById('email').addEventListener('input', function(e) {
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (!emailRegex.test(this.value)) {
+                            this.setCustomValidity('Please enter a valid email address');
+                        } else {
+                            this.setCustomValidity('');
+                        }
+                    });
+                    
+                    // Add real-time validation for age
+                    document.getElementById('age').addEventListener('input', function(e) {
+                        const ageNum = parseInt(this.value);
+                        if (isNaN(ageNum) || ageNum < 0 || ageNum > 120) {
+                            this.setCustomValidity('Please enter a valid age (0-120)');
+                        } else {
+                            this.setCustomValidity('');
+                        }
+                    });
+                    
+                    // Add real-time validation for number of visitors
+                    document.getElementById('visitors').addEventListener('input', function(e) {
+                        const visitorsNum = parseInt(this.value) || 0;
+                        if (visitorsNum < 0 || visitorsNum > 10) {
+                            this.setCustomValidity('Number of visitors must be between 0 and 10');
+                        } else {
+                            this.setCustomValidity('');
+                        }
+                    });
+
+                    function showMonumentDetails(monument) {
+                        // Prevent event propagation
+                        event.stopPropagation();
+                        
+                        const details = {
+                            'Taj Mahal': {
+                                description: 'The Taj Mahal is an ivory-white marble mausoleum on the southern bank of the river Yamuna in the Indian city of Agra. It was commissioned in 1632 by the Mughal emperor Shah Jahan to house the tomb of his favorite wife, Mumtaz Mahal.',
+                                history: 'Construction of the Taj Mahal began in 1632 and was completed in 1653. The complex houses the tombs of Shah Jahan and one of his wives, Mumtaz Mahal.',
+                                architecture: 'The Taj Mahal is considered the finest example of Mughal architecture, a style that combines elements from Persian, Ottoman Turkish and Indian architectural styles.',
+                                visitingHours: 'Sunrise to Sunset (Closed on Fridays)',
+                                bestTime: 'October to March (Winter Season)',
+                                entryFee: '₹799 per person (Indian Nationals)',
+                                tips: '1. Arrive early to avoid crowds\n2. Photography is allowed but tripods are prohibited\n3. Wear comfortable shoes as there is a lot of walking\n4. Carry water and sun protection'
+                            },
+                            'Red Fort': {
+                                description: 'The Red Fort is a historic fort in the city of Delhi in India. It served as the main residence of the Mughal Emperors. Emperor Shah Jahan commissioned construction of the Red Fort on 12 May 1638, when he decided to shift his capital from Agra to Delhi.',
+                                history: 'The Red Fort was built in 1639-48 by the Mughal emperor Shah Jahan. It was the residence of the Mughal emperors until 1857.',
+                                architecture: 'The Red Fort is built of red sandstone and is surrounded by massive walls that are 2.5 km long. The fort complex includes several palaces, halls, and gardens.',
+                                visitingHours: '9:30 AM to 4:30 PM (Closed on Mondays)',
+                                bestTime: 'October to March (Winter Season)',
+                                entryFee: '₹799 per person (Indian Nationals)',
+                                tips: '1. Visit during early morning or late afternoon\n2. Carry valid ID proof\n3. Photography is allowed\n4. Wear comfortable walking shoes'
+                            },
+                            'Qutub Minar': {
+                                description: 'The Qutub Minar is a minaret and "victory tower" that forms part of the Qutb complex, a UNESCO World Heritage Site in the Mehrauli area of Delhi, India. It is one of the most visited tourist spots in the city.',
+                                history: 'Construction of the Qutub Minar was started in 1192 by Qutb-ud-din Aibak, the first Sultan of Delhi, and was completed by his successor Iltutmish in 1220.',
+                                architecture: 'The Qutub Minar is 73 meters tall and has five distinct storeys, each marked by a projecting balcony. The first three storeys are made of red sandstone, while the fourth and fifth storeys are made of marble and sandstone.',
+                                visitingHours: '7:00 AM to 5:00 PM (Open all days)',
+                                bestTime: 'October to March (Winter Season)',
+                                entryFee: '₹799 per person (Indian Nationals)',
+                                tips: '1. Visit early morning for better photography\n2. Carry water and sun protection\n3. Photography is allowed\n4. Wear comfortable shoes'
+                            },
+                            'India Gate': {
+                                description: 'India Gate is a war memorial located astride the Rajpath, on the eastern edge of the "ceremonial axis" of New Delhi. It stands as a tribute to the soldiers of the Indian Army who lost their lives in World War I.',
+                                history: 'India Gate was designed by Sir Edwin Lutyens and was completed in 1931. It was originally called the All India War Memorial.',
+                                architecture: 'The 42-meter tall arch is built of red sandstone and granite. The structure is surrounded by a large park and is a popular spot for visitors and locals alike.',
+                                visitingHours: 'Open 24 hours',
+                                bestTime: 'October to March (Winter Season)',
+                                entryFee: 'Free entry',
+                                tips: '1. Visit in the evening for the best experience\n2. Photography is allowed\n3. Carry water and snacks\n4. Wear comfortable walking shoes'
+                            },
+                            'Lotus Temple': {
+                                description: 'The Lotus Temple, located in Delhi, India, is a Bahá\'í House of Worship that was dedicated in December 1986. Notable for its flowerlike shape, it has become a prominent attraction in the city.',
+                                history: 'The temple was designed by Iranian architect Fariborz Sahba and was completed in 1986. It has won numerous architectural awards and has been featured in many magazine and newspaper articles.',
+                                architecture: 'The temple is built in the shape of a lotus flower with 27 free-standing marble-clad "petals" arranged in clusters of three to form nine sides.',
+                                visitingHours: '9:00 AM to 5:00 PM (Closed on Mondays)',
+                                bestTime: 'October to March (Winter Season)',
+                                entryFee: 'Free entry',
+                                tips: '1. Maintain silence inside the temple\n2. Photography is not allowed inside\n3. Remove shoes before entering\n4. Dress modestly'
+                            },
+                            'Jama Masjid': {
+                                description: 'The Jama Masjid is one of the largest mosques in India. Built by Mughal Emperor Shah Jahan between 1650 and 1656, it is the final architectural extravagance of the Mughal emperor.',
+                                history: 'Construction of the mosque began in 1650 and was completed in 1656. It was inaugurated by Imam Syed Abdul Ghafoor Shah Bukhari from Uzbekistan.',
+                                architecture: 'The mosque is built of red sandstone and white marble. It has three gates, four towers, and two 40-meter-high minarets.',
+                                visitingHours: '7:00 AM to 12:00 PM, 1:30 PM to 6:30 PM',
+                                bestTime: 'October to March (Winter Season)',
+                                entryFee: 'Free entry (Camera: ₹300)',
+                                tips: '1. Dress modestly\n2. Remove shoes before entering\n3. Photography requires permission\n4. Visit during non-prayer times'
+                            },
+                            'Akshardham Temple': {
+                                description: 'Akshardham Temple is a Hindu temple complex in Delhi, India. The temple complex features exhibitions on incidents from the life of Swaminarayan and the history of India.',
+                                history: 'The temple was inaugurated on 6 November 2005 by Pramukh Swami Maharaj. It was built by the BAPS organization.',
+                                architecture: 'The temple is built of pink sandstone and white marble. It features 234 ornately carved pillars, 9 ornate domes, 20 quadrangled shikhars, and 20,000 murtis and statues.',
+                                visitingHours: '9:30 AM to 6:30 PM (Closed on Mondays)',
+                                bestTime: 'October to March (Winter Season)',
+                                entryFee: 'Free entry (Exhibition: ₹170)',
+                                tips: '1. Photography is not allowed\n2. Dress modestly\n3. Arrive early to avoid crowds\n4. Carry water and snacks'
+                            },
+                            'Raj Ghat': {
+                                description: 'Raj Ghat is a memorial dedicated to Mahatma Gandhi, the Father of the Nation. It is a black marble platform that marks the spot of Gandhi\'s cremation.',
+                                history: 'Gandhi was assassinated on 30 January 1948. His last rites were performed at this spot on 31 January 1948.',
+                                architecture: 'The memorial is a simple black marble platform with an eternal flame burning at one end. The platform is surrounded by a park with trees planted by various dignitaries.',
+                                visitingHours: '6:00 AM to 6:00 PM',
+                                bestTime: 'October to March (Winter Season)',
+                                entryFee: 'Free entry',
+                                tips: '1. Maintain silence\n2. Remove shoes before entering\n3. Photography is allowed\n4. Dress modestly'
+                            },
+                            'Jantar Mantar': {
+                                description: 'Jantar Mantar is an astronomical observatory built by Maharaja Jai Singh II of Jaipur. It consists of 13 architectural astronomy instruments.',
+                                history: 'Built in 1724 by Maharaja Jai Singh II, it was designed to compile astronomical tables and predict the times and movements of the sun, moon, and planets.',
+                                architecture: 'The observatory consists of 13 architectural astronomy instruments, including the world\'s largest stone sundial.',
+                                visitingHours: '9:00 AM to 4:30 PM',
+                                bestTime: 'October to March (Winter Season)',
+                                entryFee: '₹15 per person (Indian Nationals)',
+                                tips: '1. Visit during clear weather\n2. Photography is allowed\n3. Carry water\n4. Wear comfortable shoes'
+                            },
+                            'Rashtrapati Bhavan': {
+                                description: 'Rashtrapati Bhavan is the official residence of the President of India. It is the largest residence of any head of state in the world.',
+                                history: 'The building was designed by British architects Edwin Lutyens and Herbert Baker. Construction began in 1912 and was completed in 1929.',
+                                architecture: 'The building combines Indian and Western architectural styles. It has 340 rooms, spread over four floors, with a floor area of 200,000 square feet.',
+                                visitingHours: '9:00 AM to 4:00 PM (Closed on Mondays)',
+                                bestTime: 'October to March (Winter Season)',
+                                entryFee: 'Free entry (Advance booking required)',
+                                tips: '1. Book tickets in advance\n2. Carry valid ID proof\n3. Photography is restricted\n4. Dress formally'
+                            }
+                        };
+
+                        const monumentInfo = details[monument];
+                        if (!monumentInfo) {
+                            console.error('Monument not found:', monument);
+                            return;
+                        }
+
+                        // Create and show the modal
+                        const modal = document.createElement('div');
+                        modal.className = 'monument-modal';
+                        modal.innerHTML = `
+                            <div class="monument-details">
+                                <h2>${monument}</h2>
+                                <div class="detail-section">
+                                    <h3 data-translate="description">Description</h3>
+                                    <p>${monumentInfo.description}</p>
+                                </div>
+                                <div class="detail-section">
+                                    <h3 data-translate="history">History</h3>
+                                    <p>${monumentInfo.history}</p>
+                                </div>
+                                <div class="detail-section">
+                                    <h3 data-translate="architecture">Architecture</h3>
+                                    <p>${monumentInfo.architecture}</p>
+                                </div>
+                                <div class="detail-section">
+                                    <h3 data-translate="visiting-hours">Visiting Hours</h3>
+                                    <p>${monumentInfo.visitingHours}</p>
+                                </div>
+                                <div class="detail-section">
+                                    <h3 data-translate="best-time">Best Time to Visit</h3>
+                                    <p>${monumentInfo.bestTime}</p>
+                                </div>
+                                <div class="detail-section">
+                                    <h3 data-translate="entry-fee">Entry Fee</h3>
+                                    <p>${monumentInfo.entryFee}</p>
+                                </div>
+                                <div class="detail-section">
+                                    <h3 data-translate="tips">Visitor Tips</h3>
+                                    <p>${monumentInfo.tips}</p>
+                                </div>
+                                <button class="close-modal" onclick="closeMonumentDetails()" data-translate="close">Close</button>
+                            </div>
+                        `;
+                        document.body.appendChild(modal);
+
+                        // Apply translations to the new content
+                        const currentLang = document.getElementById('language').value;
+                        changeLanguage(currentLang);
+                    }
+
+                    function closeMonumentDetails() {
+                        const modal = document.querySelector('.monument-modal');
+                        if (modal) {
+                            modal.remove();
+                        }
+                    }
+
+                    function updateIdField() {
+                        const nationality = document.querySelector('input[name="nationality"]:checked').value;
+                        const idHelp = document.getElementById('idHelp');
+                        if (nationality === 'indian') {
+                            idHelp.textContent = 'Aadhar Card for Indians';
+                        } else {
+                            idHelp.textContent = 'Passport for Foreigners';
+                        }
+                        updateFees();
+                    }
+
+                    function updateFees() {
+                        const monument = document.getElementById('monument').value;
+                        const nationality = document.querySelector('input[name="nationality"]:checked').value;
+                        const age = parseInt(document.getElementById('age').value) || 0;
+                        const camera = document.querySelector('input[name="camera"]:checked').value;
+                        const student = document.querySelector('input[name="student"]:checked').value;
+                        const studentId = document.getElementById('studentId').value;
+
+                        let baseFee = monumentFees[monument][nationality];
+                        let discount = 0;
+                        let cameraFee = 0;
+                        let breakdown = [];
+
+                        // Update the dynamic entry fee display
+                        document.getElementById('dynamicEntryFee').textContent = `₹${baseFee}`;
+
+                        // Add base fee to breakdown
+                        breakdown.push(`Base Fee: ₹${baseFee}`);
+
+                        // Apply senior citizen discount (10% for age >= 65)
+                        if (age >= 65) {
+                            discount = baseFee * 0.1;
+                            breakdown.push(`Senior Citizen Discount (10%): -₹${discount}`);
+                        }
+
+                        // Apply student discount (30% with valid ID)
+                        if (student === 'yes' && studentId) {
+                            const studentDiscount = baseFee * 0.3;
+                            discount += studentDiscount;
+                            breakdown.push(`Student Discount (30%): -₹${studentDiscount}`);
+                        }
+
+                        // Add camera fee if selected
+                        if (camera === 'yes') {
+                            cameraFee = 300;
+                            breakdown.push(`Camera Fee: ₹${cameraFee}`);
+                        }
+
+                        // Calculate total
+                        const total = baseFee - discount + cameraFee;
+
+                        // Update fee breakdown
+                        document.getElementById('feeBreakdown').innerHTML = breakdown.join('<br>');
+                        document.getElementById('totalFee').textContent = total;
+                    }
+
+                    // Add event listeners for all fee-affecting inputs
+                    document.getElementById('monument').addEventListener('change', updateFees);
+                    document.getElementById('age').addEventListener('input', updateFees);
+                    document.getElementById('studentId').addEventListener('input', updateFees);
+
+                    // Initialize fees on page load
+                    document.addEventListener('DOMContentLoaded', updateFees);
+
+                    function updateEntryFee() {
+                        const monumentSelect = document.getElementById('monument');
+                        const entryFeeDisplay = document.getElementById('dynamicEntryFee');
+                        
+                        if (!monumentSelect || !entryFeeDisplay) return;
+                        
+                        const selectedMonument = monumentSelect.value;
+                        
+                        if (selectedMonument) {
+                            try {
+                            // Get the monuments data from the template variable
+                            const monumentData = JSON.parse('{{ monuments_data|tojson|safe }}');
+                            const entryFee = monumentData[selectedMonument]?.entry_fee || '₹0 for Indians, ₹0 for Foreigners';
+                            const indianFee = entryFee.split('for Indians')[0].replace('₹', '').trim();
+                            entryFeeDisplay.textContent = `₹${indianFee}`;
+                            } catch (error) {
+                                console.error('Error updating entry fee:', error);
+                                entryFeeDisplay.textContent = '₹0';
+                            }
+                        } else {
+                            entryFeeDisplay.textContent = '₹0';
+                        }
+                    }
+
+                    // Initialize form submission handler
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const form = document.querySelector('form');
+                        if (form) {
+                            form.addEventListener('submit', handleFormSubmission);
+                        }
+                        
+                        // Initialize entry fee display
+                        updateEntryFee();
+                    });
+
+                    function handleFormSubmission(e) {
+                        e.preventDefault();
+                        
+                        // Get form elements with null checks
+                        const form = e.target;
+                        const name = form.querySelector('#name')?.value;
+                        const age = form.querySelector('#age')?.value;
+                        const email = form.querySelector('#email')?.value;
+                        const monument = form.querySelector('#monument')?.value;
+                        const date = form.querySelector('#date')?.value;
+                        const timeSlot = form.querySelector('#selected_time_slot')?.value;
+                        const numVisitors = form.querySelector('#visitors')?.value || '0';
+                        const needParkingCheckbox = form.querySelector('#need_parking');
+                        const needParking = needParkingCheckbox ? needParkingCheckbox.checked : false;
+                        const isStudent = form.querySelector('#is_student')?.checked || false;
+                        const needGuide = form.querySelector('#need_guide')?.checked || false;
+                        
+                        // Validate required fields
+                        if (!name || !age || !email || !monument || !date || !timeSlot) {
+                            alert('Please fill in all required fields');
+                            return;
+                        }
+                        
+                        // Validate email format
+                        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                            alert('Please enter a valid email address');
+                            return;
+                        }
+                        
+                        // Validate age
+                        const ageNum = parseInt(age);
+                        if (isNaN(ageNum) || ageNum < 1 || ageNum > 120) {
+                            alert('Please enter a valid age between 1 and 120');
+                            return;
+                        }
+                        
+                        // Validate date
+                        const selectedDate = new Date(date);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        if (selectedDate < today) {
+                            alert('Please select a future date');
+                            return;
+                        }
+                        
+                        // Validate number of visitors
+                        const visitorsNum = parseInt(numVisitors);
+                        if (isNaN(visitorsNum) || visitorsNum < 0 || visitorsNum > 10) {
+                            alert('Number of visitors must be between 0 and 10');
+                            return;
+                        }
+                        
+                        // Create booking data object
+                        const bookingData = {
+                            name,
+                            email,
+                            monument,
+                            date,
+                            time_slot: timeSlot,
+                            visitors: visitorsNum,
+                            is_student: isStudent,
+                            need_guide: needGuide
+                        };
+                        
+                        // If parking is needed, redirect to parking page
+                        if (needParking) {
+                            try {
+                                sessionStorage.setItem('bookingData', JSON.stringify(bookingData));
+                                window.location.href = '/parking';
+                            } catch (error) {
+                                console.error('Error storing booking data:', error);
+                                alert('An error occurred while processing your booking. Please try again.');
+                            }
+                            return;
+                        }
+                        
+                        // If no parking needed, proceed to payment
+                        fetch('/payment', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(bookingData)
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                window.location.href = '/payment';
+                            } else {
+                                throw new Error('Payment processing failed');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while processing your booking. Please try again.');
+                        });
+                    }
+                </script>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html> 

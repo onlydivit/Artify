@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} - Artify</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% include 'speech_control.html' %}
+    
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="{{ url_for('home') }}">Artify</a>
+        </div>
+        <div class="nav-links">
+            {% if session.user_id %}
+                <a href="{{ url_for('home') }}">Home</a>
+                <a href="{{ url_for('booking') }}">Book Now</a>
+                <a href="{{ url_for('parking') }}">Parking</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('register') }}">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-message">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <main class="content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 Artify. All rights reserved.</p>
+    </footer>
+
+    <!-- Accessibility announcement for screen readers -->
+    <div aria-live="polite" class="sr-only" id="a11y-announcer"></div>
+
+    <script>
+    // Function to make announcements for screen readers
+    function announce(message) {
+        const announcer = document.getElementById('a11y-announcer');
+        announcer.textContent = message;
+    }
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

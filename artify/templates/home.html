@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Artify</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #4facfe;
+            --gradient-1: linear-gradient(135deg, #4facfe, #00f2fe);
+            --gradient-2: linear-gradient(135deg, #2193b0, #6dd5ed);
+            --gradient-3: linear-gradient(135deg, #2193b0, #4facfe);
+        }
+
+        body {
+            background: #f8f9fa;
+            min-height: 100vh;
+            color: var(--primary-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h1 {
+            font-size: 2.5rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            position: relative;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background: var(--gradient-1);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 8rem 2rem 2rem;
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 4rem 2rem;
+            margin-bottom: 4rem;
+            position: relative;
+            overflow: hidden;
+            border-radius: 30px;
+            background: white;
+            color: var(--primary-color);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.1), rgba(0, 242, 254, 0.1));
+            opacity: 0.5;
+            z-index: 1;
+        }
+
+        .hero-section h2 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: slideInLeft 1s ease-out;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-section p {
+            font-size: 1.4rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+            color: var(--primary-color);
+            animation: slideInRight 1s ease-out;
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--gradient-1);
+            border-radius: 2px;
+            animation: expandWidth 1.5s ease-out forwards;
+        }
+
+        @keyframes expandWidth {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100px;
+            }
+        }
+
+        .monuments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+            perspective: 1000px;
+        }
+
+        .monument-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .monument-card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .monument-image {
+            position: relative;
+            height: 250px;
+            overflow: hidden;
+        }
+
+        .monument-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .monument-card:hover .monument-image img {
+            transform: scale(1.1);
+        }
+
+        .monument-info {
+            padding: 2rem;
+            background: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .monument-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .monument-info p {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.5rem 1.2rem;
+            background: var(--gradient-3);
+            color: white;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .card-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .card-btn {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .card-btn.primary {
+            background: var(--gradient-1);
+            color: white;
+        }
+
+        .card-btn.secondary {
+            background: var(--gradient-2);
+            color: white;
+        }
+
+        .card-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .button-container {
+            text-align: center;
+            margin: 2rem 0;
+            width: 100%;
+        }
+
+        .see-more-btn {
+            background: var(--gradient-3);
+            color: white;
+            border: none;
+            padding: 1.2rem 3rem;
+            font-size: 1.2rem;
+            border-radius: 35px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .see-more-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(100%);
+            transition: transform 0.5s ease;
+        }
+
+        .see-more-btn:hover::before {
+            transform: translateX(-100%);
+        }
+
+        .see-more-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .lang-select {
+            background: white;
+            color: var(--primary-color);
+            border: 2px solid #e0e0e0;
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .lang-select:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .voice-control {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            z-index: 1000;
+        }
+
+        .mic-button {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mic-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .mic-button.recording {
+            background: var(--gradient-2);
+            animation: pulse 1.5s infinite;
+        }
+
+        .voice-feedback {
+            position: fixed;
+            bottom: 120px;
+            right: 40px;
+            background: var(--gradient-3);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 15px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            font-weight: 500;
+            transform: translateY(20px);
+        }
+
+        .voice-feedback.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .monument-card.hidden {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.5s ease;
+        }
+
+        .monument-card.hidden.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .navbar h1 {
+                font-size: 1.8rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .nav-links a {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            .hero-section {
+                padding: 3rem 1rem;
+            }
+
+            .hero-section h2 {
+                font-size: 2.5rem;
+            }
+
+            .hero-section p {
+                font-size: 1.1rem;
+            }
+
+            .monuments-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .monument-image {
+                height: 200px;
+            }
+
+            .monument-info {
+                padding: 1.5rem;
+            }
+
+            .monument-info h3 {
+                font-size: 1.5rem;
+            }
+
+            .card-buttons {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .voice-control {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .mic-button {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+
+            .voice-feedback {
+                bottom: 90px;
+                right: 20px;
+                padding: 12px 25px;
+                font-size: 14px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <h1>Artify</h1>
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}" data-translate="nav-home">Home</a>
+            <a href="{{ url_for('booking') }}" data-translate="nav-book">Book Now</a>
+            <a href="{{ url_for('parking') }}" data-translate="nav-parking">Parking</a>
+            <select id="language" onchange="changeLanguage(this.value)" class="lang-select">
+                <option value="en">Lang: EN</option>
+                <option value="hi">हिंदी</option>
+                <option value="fr">Français</option>
+                <option value="zh">中文</option>
+                <option value="mr">मराठी</option>
+            </select>
+            <a href="{{ url_for('logout') }}" data-translate="nav-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-message">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <section class="hero-section">
+            <h2 data-translate="welcome-title">Welcome to Artify</h2>
+            <p data-translate="welcome-subtitle">Discover the rich heritage of Delhi through its magnificent monuments. Each monument tells a unique story of India's glorious past.</p>
+        </section>
+
+        <div class="monuments-grid">
+            <!-- First 6 monuments visible by default -->
+            <div class="monument-card">
+                <div class="monument-image">
+                    <img src="{{ url_for('static', filename='images/Red fort.jpeg') }}" alt="Red Fort">
+                </div>
+                <div class="monument-info">
+                    <h3 data-translate="monument-red-fort">Red Fort (Lal Qila)</h3>
+                    <span class="status" data-translate="unesco-label">UNESCO World Heritage Site</span>
+                    <p data-translate="monument-red-fort-desc">A historic fort built by Mughal Emperor Shah Jahan, symbolizing the grandeur of the Mughal Empire.</p>
+                    <div class="card-buttons">
+                        <a href="{{ url_for('monument_details', monument_name='Red Fort') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
+                        <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="monument-card">
+                <div class="monument-image">
+                    <img src="{{ url_for('static', filename='images/Qutub minar.jpeg') }}" alt="Qutub Minar">
+                </div>
+                <div class="monument-info">
+                    <h3 data-translate="monument-qutub">Qutub Minar</h3>
+                    <span class="status" data-translate="unesco-label">UNESCO World Heritage Site</span>
+                    <p data-translate="monument-qutub-desc">The tallest brick minaret in the world, showcasing Indo-Islamic architecture.</p>
+                    <div class="card-buttons">
+                        <a href="{{ url_for('monument_details', monument_name='Qutub Minar') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
+                        <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="monument-card">
+                <div class="monument-image">
+                    <img src="{{ url_for('static', filename='images/India gate.jpeg') }}" alt="India Gate">
+                </div>
+                <div class="monument-info">
+                    <h3 data-translate="monument-india-gate">India Gate</h3>
+                    <p data-translate="monument-india-gate-desc">A war memorial dedicated to the soldiers of the British Indian Army who died in World War I.</p>
+                    <div class="card-buttons">
+                        <a href="{{ url_for('monument_details', monument_name='India Gate') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
+                        <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="monument-card">
+                <div class="monument-image">
+                    <img src="{{ url_for('static', filename='images/Taj Mahal.jpeg') }}" alt="Taj Mahal">
+                </div>
+                <div class="monument-info">
+                    <h3 data-translate="monument-taj">Taj Mahal</h3>
+                    <span class="status" data-translate="unesco-label">UNESCO World Heritage Site</span>
+                    <p data-translate="monument-taj-desc">One of the Seven Wonders of the World, a symbol of eternal love.</p>
+                    <div class="card-buttons">
+                        <a href="{{ url_for('monument_details', monument_name='Taj Mahal') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
+                        <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="monument-card">
+                <div class="monument-image">
+                    <img src="{{ url_for('static', filename='images/Lotus temple.jpeg') }}" alt="Lotus Temple">
+                </div>
+                <div class="monument-info">
+                    <h3 data-translate="monument-lotus">Lotus Temple</h3>
+                    <p data-translate="monument-lotus-desc">Known for its flowerlike shape, it is a Bahá'í House of Worship.</p>
+                    <div class="card-buttons">
+                        <a href="{{ url_for('monument_details', monument_name='Lotus Temple') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
+                        <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="monument-card">
+                <div class="monument-image">
+                    <img src="{{ url_for('static', filename='images/Jama masjid.jpeg') }}" alt="Jama Masjid">
+                </div>
+                <div class="monument-info">
+                    <h3 data-translate="monument-jama">Jama Masjid</h3>
+                    <p data-translate="monument-jama-desc">One of the largest mosques in India, built by Shah Jahan.</p>
+                    <div class="card-buttons">
+                        <a href="{{ url_for('monument_details', monument_name='Jama Masjid') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
+                        <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-container" id="topButtonContainer">
+            <button class="see-more-btn" onclick="toggleMonuments()" id="seeMoreBtn" data-translate="see-more-btn">See More Monuments</button>
+        </div>
+
+        <div class="monuments-grid" id="hiddenMonumentsGrid">
+            <!-- Hidden monuments -->
+            <div class="monument-card hidden">
+                <div class="monument-image">
+                    <img src="{{ url_for('static', filename='images/Purana qila (Old Fort).jpeg') }}" alt="Purana Qila">
+                </div>
+                <div class="monument-info">
+                    <h3 data-translate="monument-purana">Purana Qila (Old Fort)</h3>
+                    <p data-translate="monument-purana-desc">Believed to be the site of Indraprastha, the ancient city of the Mahabharata.</p>
+                    <div class="card-buttons">
+                        <a href="{{ url_for('monument_details', monument_name='Purana Qila') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
+                        <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="monument-card hidden">
+                <div class="monument-image">
+                    <img src="{{ url_for('static', filename='images/Lodi Gardens.jpeg') }}" alt="Lodi Gardens">
+                </div>
+                <div class="monument-info">
+                    <h3 data-translate="monument-lodi">Lodi Gardens</h3>
+                    <p data-translate="monument-lodi-desc">A city park containing tombs of the Sayyid and Lodi dynasties.</p>
+                    <div class="card-buttons">
+                        <a href="{{ url_for('monument_details', monument_name='Lodi Gardens') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
+                        <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="monument-card hidden">
+                <div class="monument-image">
+                    <img src="{{ url_for('static', filename='images/Rastrapati bhavan.jpeg') }}" alt="Rashtrapati Bhavan">
+                </div>
+                <div class="monument-info">
+                    <h3 data-translate="monument-rashtrapati">Rashtrapati Bhavan</h3>
+                    <p data-translate="monument-rashtrapati-desc">The official residence of the President of India, with beautiful Mughal gardens.</p>
+                    <div class="card-buttons">
+                        <a href="{{ url_for('monument_details', monument_name='Rashtrapati Bhavan') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
+                        <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="monument-card hidden">
+                <div class="monument-image">
+                    <img src="{{ url_for('static', filename='images/Raj ghat.jpeg') }}" alt="Raj Ghat">
+                </div>
+                <div class="monument-info">
+                    <h3 data-translate="monument-raj-ghat">Raj Ghat</h3>
+                    <p data-translate="monument-raj-ghat-desc">A memorial dedicated to Mahatma Gandhi, marking the spot of his cremation.</p>
+                    <div class="card-buttons">
+                        <a href="{{ url_for('monument_details', monument_name='Raj Ghat') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
+                        <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="monument-card hidden">
+                <div class="monument-image">
+                    <img src="{{ url_for('static', filename='images/Jantar mantar.jpeg') }}" alt="Jantar Mantar">
+                </div>
+                <div class="monument-info">
+                    <h3 data-translate="monument-jantar">Jantar Mantar</h3>
+                    <p data-translate="monument-jantar-desc">An astronomical observatory built by Maharaja Jai Singh II of Jaipur.</p>
+                    <div class="card-buttons">
+                        <a href="{{ url_for('monument_details', monument_name='Jantar Mantar') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
+                        <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="monument-card hidden">
+                <div class="monument-image">
+                    <img src="{{ url_for('static', filename='images/Akshardham temple.jpeg') }}" alt="Akshardham Temple">
+                </div>
+                <div class="monument-info">
+                    <h3 data-translate="monument-akshardham">Akshardham Temple</h3>
+                    <p data-translate="monument-akshardham-desc">A large Hindu temple complex known for its stunning architecture and exhibitions.</p>
+                    <div class="card-buttons">
+                        <a href="{{ url_for('monument_details', monument_name='Akshardham Temple') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
+                        <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-container" id="bottomButtonContainer" style="display: none;">
+            <button class="see-more-btn" onclick="toggleMonuments()" id="showLessBtn" data-translate="show-less-btn">Show Less</button>
+        </div>
+    </div>
+
+    <!-- Voice Control Button -->
+    <div class="voice-control">
+        <button class="mic-button" id="micButton" title="Click to start voice control">
+            <i class="fas fa-microphone"></i>
+        </button>
+    </div>
+
+    <!-- Voice Feedback -->
+    <div class="voice-feedback" id="voiceFeedback">
+        Listening...
+    </div>
+
+    <script>
+        // Add translations object
+        const translations = {
+            'en': {
+                'nav-home': 'Home',
+                'nav-book': 'Book Now',
+                'nav-parking': 'Parking',
+                'nav-logout': 'Logout',
+                'welcome-title': 'Welcome to Artify',
+                'welcome-subtitle': 'Discover the rich heritage of Delhi through its magnificent monuments. Each monument tells a unique story of India\'s glorious past.',
+                'see-more-btn': 'See More Monuments',
+                'show-less-btn': 'Show Less',
+                'see-more-details': 'See More',
+                'book-now': 'Book Now',
+                'unesco-label': 'UNESCO World Heritage Site',
+                'monument-red-fort': 'Red Fort (Lal Qila)',
+                'monument-red-fort-desc': 'A historic fort built by Mughal Emperor Shah Jahan, symbolizing the grandeur of the Mughal Empire.',
+                'monument-qutub': 'Qutub Minar',
+                'monument-qutub-desc': 'The tallest brick minaret in the world, showcasing Indo-Islamic architecture.',
+                'monument-india-gate': 'India Gate',
+                'monument-india-gate-desc': 'A war memorial dedicated to the soldiers of the British Indian Army who died in World War I.',
+                'monument-taj': 'Taj Mahal',
+                'monument-taj-desc': 'One of the Seven Wonders of the World, a symbol of eternal love.',
+                'monument-lotus': 'Lotus Temple',
+                'monument-lotus-desc': 'Known for its flowerlike shape, it is a Bahá\'í House of Worship.',
+                'monument-jama': 'Jama Masjid',
+                'monument-jama-desc': 'One of the largest mosques in India, built by Shah Jahan.',
+                'monument-purana': 'Purana Qila (Old Fort)',
+                'monument-purana-desc': 'Believed to be the site of Indraprastha, the ancient city of the Mahabharata.',
+                'monument-lodi': 'Lodi Gardens',
+                'monument-lodi-desc': 'A city park containing tombs of the Sayyid and Lodi dynasties.',
+                'monument-rashtrapati': 'Rashtrapati Bhavan',
+                'monument-rashtrapati-desc': 'The official residence of the President of India, with beautiful Mughal gardens.',
+                'monument-raj-ghat': 'Raj Ghat',
+                'monument-raj-ghat-desc': 'A memorial dedicated to Mahatma Gandhi, marking the spot of his cremation.',
+                'monument-jantar': 'Jantar Mantar',
+                'monument-jantar-desc': 'An astronomical observatory built by Maharaja Jai Singh II of Jaipur.',
+                'monument-akshardham': 'Akshardham Temple',
+                'monument-akshardham-desc': 'A large Hindu temple complex known for its stunning architecture and exhibitions.'
+            },
+            'hi': {
+                'nav-home': 'होम',
+                'nav-book': 'बुक करें',
+                'nav-parking': 'पार्किंग',
+                'nav-logout': 'लॉग आउट',
+                'welcome-title': 'आर्टिफाई में आपका स्वागत है',
+                'welcome-subtitle': 'दिल्ली की समृद्ध विरासत को इसके भव्य स्मारकों के माध्यम से खोजें। प्रत्येक स्मारक भारत के गौरवशाली अतीत की एक अनूठी कहानी कहता है।',
+                'see-more-btn': 'और स्मारक देखें',
+                'show-less-btn': 'कम दिखाएं',
+                'see-more-details': 'और देखें',
+                'book-now': 'अभी बुक करें',
+                'unesco-label': 'यूनेस्को विश्व धरोहर स्थल',
+                'monument-red-fort': 'लाल किला',
+                'monument-red-fort-desc': 'मुगल सम्राट शाहजहाँ द्वारा निर्मित एक ऐतिहासिक किला, जो मुगल साम्राज्य की भव्यता का प्रतीक है।',
+                'monument-qutub': 'कुतुब मीनार',
+                'monument-qutub-desc': 'दुनिया की सबसे ऊंची ईंट की मीनार, जो भारतीय-इस्लामिक वास्तुकला का प्रदर्शन करती है।',
+                'monument-india-gate': 'इंडिया गेट',
+                'monument-india-gate-desc': 'प्रथम विश्व युद्ध में शहीद हुए ब्रिटिश भारतीय सेना के सैनिकों को समर्पित एक युद्ध स्मारक।',
+                'monument-taj': 'ताज महल',
+                'monument-taj-desc': 'जगातील सात अजूबों में से एक, शाश्वत प्रेम का प्रतीक।',
+                'monument-lotus': 'लोटस टेम्पल',
+                'monument-lotus-desc': 'फूल जैसी आकृति के लिए जाना जाने वाला, यह बहाई उपासना स्थळ है।',
+                'monument-jama': 'जामा मस्जिद',
+                'monument-jama-desc': 'भारतातील सर्वात मोठ्या मशिदींपैकी एक, शाहजहान यांनी बांधलेली.',
+                'monument-purana': 'पुराना किला',
+                'monument-purana-desc': 'महाभारत के प्राचीन शहर इंद्रप्रस्थ का स्थल माना जाता है।',
+                'monument-lodi': 'लोदी गार्डन',
+                'monument-lodi-desc': 'सैय्यद आणि लोदी राजवंशांच्या थडग्यांसह एक शहरी उद्यान.',
+                'monument-rashtrapati': 'राष्ट्रपती भवन',
+                'monument-rashtrapati-desc': 'भारताच्या राष्ट्रपतींचे अधिकृत निवासस्थान, सुंदर मुघल बागांसह.',
+                'monument-raj-ghat': 'राज घाट',
+                'monument-raj-ghat-desc': 'महात्मा गांधींना समर्पित एक स्मारक, त्यांच्या अंत्यसंस्काराच्या ठिकाणी.',
+                'monument-jantar': 'जंतर मंतर',
+                'monument-jantar-desc': 'जयपूरच्या महाराजा जयसिंह द्वितीय यांनी बांधलेली एक खगोलीय वेधशाला.',
+                'monument-akshardham': 'अक्षरधाम मंदिर',
+                'monument-akshardham-desc': 'त्याच्या आश्चर्यकारक वास्तुकला आणि प्रदर्शनांसाठी ओळखले जाणारे एक मोठे हिंदू मंदिर परिसर.'
+            },
+            'fr': {
+                'nav-home': 'Accueil',
+                'nav-book': 'Réserver',
+                'nav-parking': 'Parking',
+                'nav-logout': 'Déconnexion',
+                'welcome-title': 'Bienvenue sur Artify',
+                'welcome-subtitle': 'Découvrez le riche patrimoine de Delhi à travers ses monuments magnifiques. Chaque monument raconte une histoire unique du passé glorieux de l\'Inde.',
+                'see-more-btn': 'Voir Plus de Monuments',
+                'show-less-btn': 'Voir Moins',
+                'see-more-details': 'Voir Plus',
+                'book-now': 'Réserver',
+                'unesco-label': 'Site du patrimoine mondial de l\'UNESCO',
+                'monument-red-fort': 'Fort Rouge',
+                'monument-red-fort-desc': 'Un fort historique construit par l\'empereur moghol Shah Jahan, symbolisant la grandeur de l\'empire moghol.',
+                'monument-qutub': 'Qutub Minar',
+                'monument-qutub-desc': 'Le plus haut minaret en briques du monde, présentant l\'architecture indo-islamique.',
+                'monument-india-gate': 'Porte de l\'Inde',
+                'monument-india-gate-desc': 'Un mémorial de guerre dédié aux soldats de l\'armée britannique des Indes morts pendant la Première Guerre mondiale.',
+                'monument-taj': 'Taj Mahal',
+                'monument-taj-desc': 'L\'une des sept merveilles du monde, un symbole d\'amour éternel.',
+                'monument-lotus': 'Temple du Lotus',
+                'monument-lotus-desc': 'Connu pour sa forme en fleur, c\'est une maison d\'adoration bahá\'íe.',
+                'monument-jama': 'Mosquée Jama',
+                'monument-jama-desc': 'L\'une des plus grandes mosquées d\'Inde, construite par Shah Jahan.',
+                'monument-purana': 'Purana Qila (Vieux Fort)',
+                'monument-purana-desc': 'Considéré comme le site d\'Indraprastha, l\'ancienne ville du Mahabharata.',
+                'monument-lodi': 'Jardins de Lodi',
+                'monument-lodi-desc': 'Un parc urbain contenant les tombes des dynasties Sayyid et Lodi.',
+                'monument-rashtrapati': 'Rashtrapati Bhavan',
+                'monument-rashtrapati-desc': 'La résidence officielle du Président de l\'Inde, avec de beaux jardins moghols.',
+                'monument-raj-ghat': 'Raj Ghat',
+                'monument-raj-ghat-desc': 'Un mémorial dédié à Mahatma Gandhi, marquant le lieu de sa crémation.',
+                'monument-jantar': 'Jantar Mantar',
+                'monument-jantar-desc': 'Un observatoire astronomique construit par le Maharaja Jai Singh II de Jaipur.',
+                'monument-akshardham': 'Temple Akshardham',
+                'monument-akshardham-desc': 'Un grand complexe de temples hindous connu pour son architecture étonnante et ses expositions.'
+            },
+            'zh': {
+                'nav-home': '主页',
+                'nav-book': '立即预订',
+                'nav-parking': '停车',
+                'nav-logout': '登出',
+                'welcome-title': '欢迎来到Artify',
+                'welcome-subtitle': '通过其宏伟的纪念碑探索德里丰富的遗产。每座纪念碑都讲述着印度辉煌过去的独特故事。',
+                'see-more-btn': '查看更多纪念碑',
+                'show-less-btn': '显示较少',
+                'see-more-details': '查看更多',
+                'book-now': '立即预订',
+                'unesco-label': '联合国教科文组织世界遗产',
+                'monument-red-fort': '红堡',
+                'monument-red-fort-desc': '莫卧儿皇帝沙贾汗建造的历史要塞，象征着莫卧儿帝国的辉煌。',
+                'monument-qutub': '库杜布塔',
+                'monument-qutub-desc': '世界上最高的砖塔，展示了印度伊斯兰建筑风格。',
+                'monument-india-gate': '印度门',
+                'monument-india-gate-desc': '为纪念第一次世界大战中阵亡的英属印度军队士兵而建的战争纪念碑。',
+                'monument-taj': '泰姬陵',
+                'monument-taj-desc': '世界七大奇迹之一，永恒爱情的象征。',
+                'monument-lotus': '莲花寺',
+                'monument-lotus-desc': '以其莲花形状而闻名，是巴哈伊教礼拜堂。',
+                'monument-jama': '贾玛清真寺',
+                'monument-jama-desc': '印度最大的清真寺之一，由沙贾汗建造。',
+                'monument-purana': '普拉纳奇拉（旧堡）',
+                'monument-purana-desc': '被认为是摩诃婆罗多史诗中古城因陀罗普拉斯特的所在地。',
+                'monument-lodi': '洛迪花园',
+                'monument-lodi-desc': '一个包含赛义德和洛迪王朝陵墓的城市公园。',
+                'monument-rashtrapati': '印度总统府',
+                'monument-rashtrapati-desc': '印度总统的官邸，拥有美丽的莫卧儿花园。',
+                'monument-raj-ghat': '拉杰加特',
+                'monument-raj-ghat-desc': '纪念圣雄甘地的纪念碑，标记着他的火化地点。',
+                'monument-jantar': '简塔·曼塔天文台',
+                'monument-jantar-desc': '由斋浦尔王公杰伊·辛格二世建造的天文台。',
+                'monument-akshardham': '阿克沙达姆神庙',
+                'monument-akshardham-desc': '以其令人惊叹的建筑和展览而闻名的大型印度教寺庙建筑群。'
+            },
+            'mr': {
+                'nav-home': 'मुख्यपृष्ठ',
+                'nav-book': 'बुक करा',
+                'nav-parking': 'पार्किंग',
+                'nav-logout': 'लॉगआउट',
+                'welcome-title': 'आर्टिफाईमध्ये आपले स्वागत आहे',
+                'welcome-subtitle': 'दिल्लीचा समृद्ध वारसा त्याच्या भव्य स्मारकांद्वारे शोधा. प्रत्येक स्मारक भारताच्या गौरवशाली भूतकाळाची एक अनोखी कहाणी सांगते.',
+                'see-more-btn': 'अधिक स्मारके पहा',
+                'show-less-btn': 'कमी दाखवा',
+                'see-more-details': 'अधिक पहा',
+                'book-now': 'आता बुक करा',
+                'unesco-label': 'युनेस्को जागतिक वारसा स्थळ',
+                'monument-red-fort': 'लाल किल्ला',
+                'monument-red-fort-desc': 'मुघल सम्राट शाहजहान यांनी बांधलेला ऐतिहासिक किल्ला, मुघल साम्राज्याच्या भव्यतेचे प्रतीक.',
+                'monument-qutub': 'कुतुब मिनार',
+                'monument-qutub-desc': 'जगातील सर्वात उंच विटांचा मिनार, भारतीय-इस्लामिक वास्तुकला दर्शवणारा.',
+                'monument-india-gate': 'इंडिया गेट',
+                'monument-india-gate-desc': 'पहिल्या महायुद्धात मरण पावलेल्या ब्रिटिश भारतीय सैन्याच्या सैनिकांसाठी समर्पित युद्ध स्मारक.',
+                'monument-taj': 'ताज महल',
+                'monument-taj-desc': 'जगातील सात आश्चर्यांपैकी एक, शाश्वत प्रेमाचे प्रतीक.',
+                'monument-lotus': 'लोटस टेम्पल',
+                'monument-lotus-desc': 'फुलासारख्या आकारासाठी ओळखले जाणारे, हे बहाई उपासना स्थळ आहे.',
+                'monument-jama': 'जामा मशीद',
+                'monument-jama-desc': 'भारतातील सर्वात मोठ्या मशिदींपैकी एक, शाहजहान यांनी बांधलेली.',
+                'monument-purana': 'पुराणा किल्ला',
+                'monument-purana-desc': 'महाभारतातील प्राचीन शहर इंद्रप्रस्थाचे स्थळ मानले जाते.',
+                'monument-lodi': 'लोदी गार्डन',
+                'monument-lodi-desc': 'सय्यद आणि लोदी राजवंशांच्या थडग्यांसह एक शहरी उद्यान.',
+                'monument-rashtrapati': 'राष्ट्रपती भवन',
+                'monument-rashtrapati-desc': 'भारताच्या राष्ट्रपतींचे अधिकृत निवासस्थान, सुंदर मुघल बागांसह.',
+                'monument-raj-ghat': 'राज घाट',
+                'monument-raj-ghat-desc': 'महात्मा गांधींना समर्पित एक स्मारक, त्यांच्या अंत्यसंस्काराच्या ठिकाणी.',
+                'monument-jantar': 'जंतर मंतर',
+                'monument-jantar-desc': 'जयपूरच्या महाराजा जयसिंह द्वितीय यांनी बांधलेली एक खगोलीय वेधशाला.',
+                'monument-akshardham': 'अक्षरधाम मंदिर',
+                'monument-akshardham-desc': 'त्याच्या आश्चर्यकारक वास्तुकला आणि प्रदर्शनांसाठी ओळखले जाणारे एक मोठे हिंदू मंदिर परिसर.'
+            }
+        };
+
+        function changeLanguage(lang) {
+            const elements = document.querySelectorAll('[data-translate]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[lang] && translations[lang][key]) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        element.placeholder = translations[lang][key];
+                    } else {
+                        element.textContent = translations[lang][key];
+                    }
+                }
+            });
+            // Store the selected language in localStorage
+            localStorage.setItem('selectedLanguage', lang);
+        }
+
+        // Apply translations on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
+            document.getElementById('language').value = savedLanguage;
+            changeLanguage(savedLanguage);
+        });
+
+        function toggleMonuments() {
+            const hiddenCards = document.querySelectorAll('.monument-card.hidden');
+            const topButtonContainer = document.getElementById('topButtonContainer');
+            const bottomButtonContainer = document.getElementById('bottomButtonContainer');
+            const seeMoreBtn = document.getElementById('seeMoreBtn');
+            const showLessBtn = document.getElementById('showLessBtn');
+            const currentLang = document.getElementById('language').value;
+            
+            if (hiddenCards.length === 0) {
+                // If no hidden cards, we're in "show less" mode
+                const allCards = document.querySelectorAll('.monument-card');
+                allCards.forEach((card, index) => {
+                    if (index >= 6) { // Hide all cards after the first 6
+                        card.classList.add('hidden');
+                    }
+                });
+                topButtonContainer.style.display = 'block';
+                bottomButtonContainer.style.display = 'none';
+                seeMoreBtn.setAttribute('data-translate', 'see-more-btn');
+                seeMoreBtn.textContent = translations[currentLang]['see-more-btn'] || 'See More Monuments';
+            } else {
+                // Show all hidden cards
+                hiddenCards.forEach(card => {
+                    card.classList.remove('hidden');
+                });
+                topButtonContainer.style.display = 'none';
+                bottomButtonContainer.style.display = 'block';
+                showLessBtn.setAttribute('data-translate', 'show-less-btn');
+                showLessBtn.textContent = translations[currentLang]['show-less-btn'] || 'Show Less';
+            }
+        }
+
+        function showMonumentDetails(monument) {
+            // You can implement a modal or redirect to a detailed page here
+            alert(`Detailed information about ${monument} will be shown here.`);
+        }
+
+        // Voice Control Functionality
+        const micButton = document.getElementById('micButton');
+        const voiceFeedback = document.getElementById('voiceFeedback');
+        let recognition = null;
+
+        // Process voice commands
+        function processVoiceCommand(command) {
+            console.log('Processing command:', command); // Debug log
+            
+            // Navigation commands
+            if (command.includes('go to home') || command.includes('navigate to home')) {
+                window.location.href = "{{ url_for('home') }}";
+            } else if (command.includes('go to booking') || command.includes('navigate to booking')) {
+                window.location.href = "{{ url_for('booking') }}";
+            } else if (command.includes('go to parking') || command.includes('navigate to parking')) {
+                window.location.href = "{{ url_for('parking') }}";
+            } else if (command.includes('logout') || command.includes('sign out')) {
+                window.location.href = "{{ url_for('logout') }}";
+            }
+            // Monument selection commands
+            else if (command.includes('show me taj mahal') || command.includes('taj mahal details')) {
+                window.location.href = "{{ url_for('monument_details', monument_name='Taj Mahal') }}";
+            } else if (command.includes('show me red fort') || command.includes('red fort details')) {
+                window.location.href = "{{ url_for('monument_details', monument_name='Red Fort') }}";
+            } else if (command.includes('show me qutub minar') || command.includes('qutub minar details')) {
+                window.location.href = "{{ url_for('monument_details', monument_name='Qutub Minar') }}";
+            } else if (command.includes('show me india gate') || command.includes('india gate details')) {
+                window.location.href = "{{ url_for('monument_details', monument_name='India Gate') }}";
+            } else if (command.includes('show me lotus temple') || command.includes('lotus temple details')) {
+                window.location.href = "{{ url_for('monument_details', monument_name='Lotus Temple') }}";
+            } else if (command.includes('show me jama masjid') || command.includes('jama masjid details')) {
+                window.location.href = "{{ url_for('monument_details', monument_name='Jama Masjid') }}";
+            } else if (command.includes('show me purana qila') || command.includes('purana qila details')) {
+                window.location.href = "{{ url_for('monument_details', monument_name='Purana Qila') }}";
+            } else if (command.includes('show me national war memorial') || command.includes('national war memorial details')) {
+                window.location.href = "{{ url_for('monument_details', monument_name='National War Memorial') }}";
+            } else if (command.includes('show me rashtrapati bhavan') || command.includes('rashtrapati bhavan details')) {
+                window.location.href = "{{ url_for('monument_details', monument_name='Rashtrapati Bhavan') }}";
+            } else if (command.includes('show me raj ghat') || command.includes('raj ghat details')) {
+                window.location.href = "{{ url_for('monument_details', monument_name='Raj Ghat') }}";
+            } else if (command.includes('show me jantar mantar') || command.includes('jantar mantar details')) {
+                window.location.href = "{{ url_for('monument_details', monument_name='Jantar Mantar') }}";
+            } else if (command.includes('show me akshardham temple') || command.includes('akshardham temple details')) {
+                window.location.href = "{{ url_for('monument_details', monument_name='Akshardham Temple') }}";
+            } else if (command.includes('show me lodi gardens') || command.includes('lodi gardens details')) {
+                window.location.href = "{{ url_for('monument_details', monument_name='Lodi Gardens') }}";
+            }
+            // Language change commands
+            else if (command.includes('change language to hindi') || command.includes('switch to hindi') || command.includes('hindi language')) {
+                document.getElementById('language').value = 'hi';
+                changeLanguage('hi');
+            } else if (command.includes('change language to english') || command.includes('switch to english') || command.includes('english language')) {
+                document.getElementById('language').value = 'en';
+                changeLanguage('en');
+            } else if (command.includes('change language to french') || command.includes('switch to french') || command.includes('french language')) {
+                document.getElementById('language').value = 'fr';
+                changeLanguage('fr');
+            } else if (command.includes('change language to chinese') || command.includes('switch to chinese') || command.includes('chinese language')) {
+                document.getElementById('language').value = 'zh';
+                changeLanguage('zh');
+            } else if (command.includes('change language to marathi') || command.includes('switch to marathi') || command.includes('marathi language')) {
+                document.getElementById('language').value = 'mr';
+                changeLanguage('mr');
+            }
+            // Show more/less monuments
+            else if (command.includes('show more monuments') || command.includes('show all monuments')) {
+                toggleMonuments();
+            } else if (command.includes('show less monuments') || command.includes('hide monuments')) {
+                toggleMonuments();
+            }
+            // Help command
+            else if (command.includes('help') || command.includes('what can you do')) {
+                alert('I can help you with:\n\n' +
+                    '1. Navigation:\n' +
+                    '- "Go to home"\n' +
+                    '- "Go to booking"\n' +
+                    '- "Go to parking"\n' +
+                    '- "Logout"\n\n' +
+                    '2. Monument Details:\n' +
+                    '- "Show me [monument name]"\n' +
+                    '- "[Monument name] details"\n\n' +
+                    '3. Language:\n' +
+                    '- "Change language to [hindi/english/french/chinese/marathi]"\n\n' +
+                    '4. View Monuments:\n' +
+                    '- "Show more monuments"\n' +
+                    '- "Show less monuments"');
+            }
+            // Default response for unrecognized commands
+            else {
+                alert('Sorry, I didn\'t understand that command. Say "help" to see what I can do.');
+            }
+        }
+
+        // Initialize speech recognition with better error handling
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            recognition.onstart = () => {
+                micButton.classList.add('recording');
+                voiceFeedback.classList.add('show');
+                voiceFeedback.textContent = 'Listening...';
+            };
+
+            recognition.onend = () => {
+                micButton.classList.remove('recording');
+                voiceFeedback.classList.remove('show');
+                voiceFeedback.textContent = 'Click microphone to start';
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                alert('Speech recognition error occurred. Please try again.');
+            };
+
+            recognition.onresult = (event) => {
+                const command = event.results[0][0].transcript.toLowerCase();
+                processVoiceCommand(command);
+            };
+
+            // Add click event listener for the microphone button
+            micButton.addEventListener('click', () => {
+                try {
+                    recognition.start();
+                } catch (error) {
+                    console.error('Error starting speech recognition:', error);
+                    alert('Error starting speech recognition. Please try again.');
+                }
+            });
+        } else {
+            alert('Speech recognition is not supported in your browser.');
+            micButton.style.display = 'none';
+        }
+    </script>
+</body>
+</html> 

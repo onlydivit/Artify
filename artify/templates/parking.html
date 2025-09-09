@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking Reservation - Artify</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar h1 {
+            font-size: 1.5rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        .main-content {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .parking-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .parking-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .parking-header h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .parking-header p {
+            opacity: 0.9;
+        }
+
+        .parking-form {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-size: 1.1rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .parking-map {
+            margin: 2rem 0;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .parking-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .parking-slot {
+            padding: 1rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .parking-slot:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .parking-slot.available {
+            border: 2px solid #4CAF50;
+        }
+
+        .parking-slot.occupied {
+            border: 2px solid #f44336;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .parking-slot.selected {
+            border: 2px solid #2196F3;
+            background: rgba(33, 150, 243, 0.2);
+        }
+
+        .price-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+
+        .submit-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 1rem;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .flash-message {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .lang-select {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.3rem;
+            border-radius: 5px;
+            margin-left: 1.5rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .lang-select:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .lang-select option {
+            background: #764ba2;
+            color: white;
+        }
+
+        .no-slots {
+            text-align: center;
+            padding: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-style: italic;
+        }
+        
+        .error-message {
+            text-align: center;
+            padding: 1rem;
+            color: #ff4444;
+            font-style: italic;
+        }
+        
+        .slot-type {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-top: 0.3rem;
+        }
+        
+        .parking-slot i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .vehicle-slots {
+            margin-top: 1rem;
+        }
+
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .parking-slot {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .parking-slot.available {
+            border-color: #4CAF50;
+        }
+
+        .parking-slot.selected {
+            background: rgba(33, 150, 243, 0.3);
+            border-color: #2196F3;
+            transform: scale(1.05);
+        }
+
+        .parking-slot.occupied {
+            background: rgba(244, 67, 54, 0.1);
+            border-color: #f44336;
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .parking-slot i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .slot-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+
+        .duration-notice {
+            display: block;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+
+        .vehicle-type-label {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #ffd700;
+        }
+
+        .form-group select {
+            padding: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.8rem center;
+            background-size: 1.5em;
+            transition: all 0.3s ease;
+        }
+
+        .form-group select:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .form-group select:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 0 2px rgba(118, 75, 162, 0.3);
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-group select option {
+            background: #764ba2;
+            color: white;
+            padding: 0.8rem;
+        }
+
+        .form-group select option:hover {
+            background: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>Artify</h1>
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}" data-translate="nav-home">Home</a>
+            <a href="{{ url_for('booking') }}" data-translate="nav-book">Book Now</a>
+            <a href="{{ url_for('parking') }}" data-translate="nav-parking">Parking</a>
+            <select id="language" onchange="changeLanguage(this.value)" class="lang-select">
+                <option value="en">Lang: EN</option>
+                <option value="hi">हिंदी</option>
+                <option value="fr">Français</option>
+                <option value="zh">中文</option>
+                <option value="mr">मराठी</option>
+            </select>
+            <a href="{{ url_for('logout') }}" data-translate="nav-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-message">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="parking-container">
+            <div class="parking-header">
+                <h2 data-translate="parking-title">Parking Booking</h2>
+                <p data-translate="parking-subtitle">Book your parking spot for your monument visit</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('process_parking') }}" class="parking-form">
+                <div class="form-group">
+                    <label for="monument" data-translate="select-monument">Select Monument</label>
+                    <select id="monument" name="monument" required data-translate="monument-placeholder" autocomplete="off">
+                        <option value="" data-translate="choose-monument">Choose a monument</option>
+                        <option value="Taj Mahal" data-translate="monument-taj">Taj Mahal</option>
+                        <option value="Red Fort" data-translate="monument-red-fort">Red Fort</option>
+                        <option value="Qutub Minar" data-translate="monument-qutub">Qutub Minar</option>
+                        <option value="India Gate" data-translate="monument-india-gate">India Gate</option>
+                        <option value="Lotus Temple" data-translate="monument-lotus">Lotus Temple</option>
+                        <option value="Jama Masjid" data-translate="monument-jama">Jama Masjid</option>
+                        <option value="Akshardham Temple" data-translate="monument-akshardham">Akshardham Temple</option>
+                        <option value="Raj Ghat" data-translate="monument-raj-ghat">Raj Ghat</option>
+                        <option value="Jantar Mantar" data-translate="monument-jantar">Jantar Mantar</option>
+                        <option value="Rashtrapati Bhavan" data-translate="monument-rashtrapati">Rashtrapati Bhavan</option>
+                        <option value="Purana Qila" data-translate="monument-purana">Purana Qila</option>
+                        <option value="National War Memorial" data-translate="monument-war-memorial">National War Memorial</option>
+                        <option value="Lodi Gardens" data-translate="monument-lodi">Lodi Gardens</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="date" data-translate="select-date">Select Date</label>
+                    <input type="date" id="date" name="date" required autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="time_slot" data-translate="select-time">Select Time Slot</label>
+                    <select id="time_slot" name="time_slot" required autocomplete="off">
+                        <option value="" data-translate="choose-time">Choose a time slot</option>
+                        <option value="09:00" data-translate="time-9">9:00 AM</option>
+                        <option value="10:00" data-translate="time-10">10:00 AM</option>
+                        <option value="11:00" data-translate="time-11">11:00 AM</option>
+                        <option value="12:00" data-translate="time-12">12:00 PM</option>
+                        <option value="13:00" data-translate="time-13">1:00 PM</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="vehicle_type" data-translate="vehicle-type">Vehicle Type</label>
+                    <select id="vehicle_type" name="vehicle_type" required autocomplete="off">
+                        <option value="" data-translate="choose-vehicle">Choose vehicle type</option>
+                        <option value="car" data-translate="vehicle-car">Car</option>
+                        <option value="bike" data-translate="vehicle-bike">Bike</option>
+                        <option value="bus" data-translate="vehicle-bus">Bus</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="vehicle_number" data-translate="vehicle-number">Vehicle Number</label>
+                    <input type="text" id="vehicle_number" name="vehicle_number" required data-translate="vehicle-number-placeholder" placeholder="Enter vehicle number" autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="name" data-translate="driver-name">Driver's Name</label>
+                    <input type="text" id="name" name="name" required data-translate="driver-name-placeholder" placeholder="Enter driver's name" autocomplete="name">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone" data-translate="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" required data-translate="phone-placeholder" placeholder="Enter phone number" autocomplete="tel">
+                </div>
+
+                <div class="form-group">
+                    <label for="duration" data-translate="parking-duration">Parking Duration (hours)</label>
+                    <input type="number" id="duration" name="duration" min="2" value="2" required onchange="updatePrice()" autocomplete="off">
+                    <small class="duration-notice">Minimum duration: 2 hours</small>
+                </div>
+
+                <div class="parking-map">
+                    <h3 data-translate="select-parking-slot">Select Parking Slot</h3>
+                    <div class="vehicle-slots">
+                        <div class="slots-grid" id="parkingSlots">
+                            <!-- Slots will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="price-info" id="priceInfo">
+                    <h3 data-translate="parking-charges">Parking Charges</h3>
+                    <p><span data-translate="hourly-rate">Hourly rate:</span> ₹<span id="hourlyRate">25</span></p>
+                    <p><span data-translate="duration">Duration:</span> <span id="durationDisplay">2</span> <span data-translate="hours">hours</span></p>
+                    <p><span data-translate="total">Total:</span> ₹<span id="totalPrice">50</span></p>
+                </div>
+
+                <input type="hidden" id="selected_slot" name="slot_number" required>
+                <input type="hidden" id="total_amount" name="total_amount" required>
+
+                <button type="submit" class="submit-btn" data-translate="book-parking">Proceed to Payment</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Set minimum date to today
+        const dateInput = document.getElementById('date');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.min = today;
+
+        function updatePrice() {
+            const duration = parseInt(document.getElementById('duration').value) || 2;
+            const hourlyRate = 25;
+            const totalPrice = duration * hourlyRate;
+            
+            document.getElementById('hourlyRate').textContent = hourlyRate;
+            document.getElementById('durationDisplay').textContent = duration;
+            document.getElementById('totalPrice').textContent = totalPrice;
+            document.getElementById('total_amount').value = totalPrice;
+        }
+
+        async function updateParkingSlots() {
+            const monument = document.getElementById('monument').value;
+            const date = document.getElementById('date').value;
+            const vehicleType = document.getElementById('vehicle_type').value;
+            
+            if (!monument || !date || !vehicleType) return;
+
+            const slotsContainer = document.getElementById('parkingSlots');
+            slotsContainer.innerHTML = '';
+
+            // Generate 10 slots for the selected vehicle type
+            for (let i = 1; i <= 10; i++) {
+                const slotDiv = document.createElement('div');
+                slotDiv.className = 'parking-slot available';
+                slotDiv.onclick = () => selectParkingSlot(i, slotDiv);
+                
+                let icon = 'fa-car';
+                if (vehicleType === 'bike') {
+                    icon = 'fa-motorcycle';
+                } else if (vehicleType === 'bus') {
+                    icon = 'fa-bus';
+                }
+                
+                slotDiv.innerHTML = `
+                    <i class="fas ${icon}"></i>
+                    <div class="slot-number">Slot ${i}</div>
+                `;
+                
+                slotsContainer.appendChild(slotDiv);
+            }
+        }
+
+        function selectParkingSlot(slotNumber, element) {
+            if (element.classList.contains('occupied')) return;
+            
+            document.querySelectorAll('.parking-slot').forEach(slot => {
+                slot.classList.remove('selected');
+            });
+            
+            element.classList.add('selected');
+            document.getElementById('selected_slot').value = slotNumber;
+        }
+
+        // Add styles for new elements
+        const style = document.createElement('style');
+        style.textContent = `
+            .no-slots {
+                text-align: center;
+                padding: 1rem;
+                color: rgba(255, 255, 255, 0.8);
+                font-style: italic;
+            }
+            
+            .error-message {
+                text-align: center;
+                padding: 1rem;
+                color: #ff4444;
+                font-style: italic;
+            }
+            
+            .slot-type {
+                font-size: 0.8rem;
+                opacity: 0.8;
+                margin-top: 0.3rem;
+            }
+            
+            .parking-slot i {
+                font-size: 1.5rem;
+                margin-bottom: 0.5rem;
+            }
+        `;
+        document.head.appendChild(style);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updatePrice();
+            
+            // Set minimum date to today
+            const dateInput = document.getElementById('date');
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.min = today;
+            dateInput.value = today;
+
+            // Initialize vehicle type change handler
+            const vehicleTypeSelect = document.getElementById('vehicle_type');
+            vehicleTypeSelect.addEventListener('change', () => {
+                updateParkingSlots();
+                updatePrice();
+            });
+
+            // Initialize duration change handler
+            const durationInput = document.getElementById('duration');
+            durationInput.addEventListener('input', updatePrice);
+
+            // Show initial parking slots if vehicle type is selected
+            if (vehicleTypeSelect.value) {
+                updateParkingSlots();
+            }
+        });
+
+        const translations = {
+            'en': {
+                'nav-home': 'Home',
+                'nav-book': 'Book Now',
+                'nav-parking': 'Parking',
+                'nav-logout': 'Logout',
+                'parking-title': 'Parking Booking',
+                'parking-subtitle': 'Book your parking spot for your monument visit',
+                'select-monument': 'Select Monument',
+                'select-date': 'Select Date',
+                'select-time': 'Select Time Slot',
+                'choose-time': 'Choose a time slot',
+                'time-9': '9:00 AM',
+                'time-10': '10:00 AM',
+                'time-11': '11:00 AM',
+                'time-12': '12:00 PM',
+                'time-13': '1:00 PM',
+                'vehicle-type': 'Vehicle Type',
+                'choose-vehicle': 'Choose vehicle type',
+                'vehicle-car': 'Car',
+                'vehicle-bike': 'Bike',
+                'vehicle-bus': 'Bus',
+                'vehicle-number': 'Vehicle Number',
+                'vehicle-number-placeholder': 'Enter vehicle number',
+                'driver-name': 'Driver\'s Name',
+                'driver-name-placeholder': 'Enter driver\'s name',
+                'phone': 'Phone Number',
+                'phone-placeholder': 'Enter phone number',
+                'book-parking': 'Proceed to Payment',
+                'select-parking-slot': 'Select Parking Slot',
+                'parking-charges': 'Parking Charges',
+                'hourly-rate': 'Hourly rate:',
+                'duration': 'Duration:',
+                'hours': 'hours',
+                'total': 'Total:',
+                'no-slots': 'No parking slots available for the selected date',
+                'error-loading': 'Error loading parking slots. Please try again.',
+                'slot': 'Slot',
+                'available': 'Available',
+                'occupied': 'Occupied',
+                'select-slot': 'Select a parking slot',
+                'parking-rates': 'Parking Rates',
+                'parking-rates-2w': '2-wheeler: ₹30/4hrs',
+                'parking-rates-4w': '4-wheeler: ₹50/4hrs',
+                'parking-rates-bus': 'Bus: ₹100/4hrs'
+            },
+            'hi': {
+                'nav-home': 'होम',
+                'nav-book': 'बुक करें',
+                'nav-parking': 'पार्किंग',
+                'nav-logout': 'लॉग आउट',
+                'parking-title': 'पार्किंग बुकिंग',
+                'parking-subtitle': 'अपनी स्मारक यात्रा के लिए पार्किंग स्पॉट बुक करें',
+                'select-monument': 'स्मारक चुनें',
+                'select-date': 'दिनांक चुनें',
+                'select-time': 'समय स्लॉट चुनें',
+                'choose-time': 'समय स्लॉट चुनें',
+                'time-9': 'सुबह 9:00',
+                'time-10': 'सुबह 10:00',
+                'time-11': 'सुबह 11:00',
+                'time-12': 'दोपहर 12:00',
+                'time-13': 'दोपहर 1:00',
+                'vehicle-type': 'वाहन प्रकार',
+                'choose-vehicle': 'वाहन प्रकार चुनें',
+                'vehicle-car': 'कार',
+                'vehicle-bike': 'बाइक',
+                'vehicle-bus': 'बस',
+                'vehicle-number': 'वाहन संख्या',
+                'vehicle-number-placeholder': 'वाहन संख्या दर्ज करें',
+                'driver-name': 'चालकाचे नाव',
+                'driver-name-placeholder': 'चालकाचे नाव टाका',
+                'phone': 'फोन नंबर',
+                'phone-placeholder': 'फोन नंबर टाका',
+                'book-parking': 'भुगतान के लिए आगे बढ़ें',
+                'select-parking-slot': 'पार्किंग स्लॉट चुनें',
+                'parking-charges': 'पार्किंग शुल्क',
+                'hourly-rate': 'आधार दर:',
+                'duration': 'अवधि:',
+                'hours': 'घंटे',
+                'total': 'कुल:',
+                'no-slots': 'चयनित तिथि के लिए कोई पार्किंग स्लॉट उपलब्ध नहीं है',
+                'error-loading': 'पार्किंग स्लॉट लोड करने में त्रुटि। कृपया पुनः प्रयास करें।',
+                'slot': 'स्लॉट',
+                'available': 'उपलब्ध',
+                'occupied': 'कब्जा किया हुआ',
+                'select-slot': 'पार्किंग स्लॉट चुनें',
+                'parking-rates': 'पार्किंग दरें',
+                'parking-rates-2w': 'दोपहिया: ₹30/4 घंटे',
+                'parking-rates-4w': 'चार पहिया: ₹50/4 घंटे',
+                'parking-rates-bus': 'बस: ₹100/4 घंटे'
+            },
+            'fr': {
+                'parking-title': 'Réservation de Stationnement',
+                'parking-subtitle': 'Réservez votre place de stationnement pour votre visite du monument',
+                'select-monument': 'Sélectionner le Monument',
+                'monument-placeholder': 'Choisir un monument',
+                'choose-monument': 'Choisir un monument',
+                'monument-red-fort': 'Fort Rouge',
+                'monument-qutub': 'Qutub Minar',
+                'monument-india-gate': 'Porte de l\'Inde',
+                'monument-taj': 'Taj Mahal',
+                'monument-lotus': 'Temple du Lotus',
+                'monument-jama': 'Mosquée Jama',
+                'select-date': 'Sélectionner la Date',
+                'select-time': 'Sélectionner l\'Horaire',
+                'choose-time': 'Choisir un horaire',
+                'time-9': '9:00 AM',
+                'time-10': '10:00 AM',
+                'time-11': '11:00 AM',
+                'time-12': '12:00 PM',
+                'time-13': '1:00 PM',
+                'vehicle-type': 'Type de Véhicule',
+                'choose-vehicle': 'Choisir le type de véhicule',
+                'vehicle-car': 'Voiture',
+                'vehicle-bike': 'Moto',
+                'vehicle-bus': 'Bus',
+                'vehicle-number': 'Numéro de Véhicule',
+                'vehicle-number-placeholder': 'Entrez le numéro de véhicule',
+                'driver-name': 'Nom du Conducteur',
+                'driver-name-placeholder': 'Entrez le nom du conducteur',
+                'phone': 'Numéro de Téléphone',
+                'phone-placeholder': 'Entrez le numéro de téléphone',
+                'book-parking': 'Réserver le Stationnement',
+                'select-parking-slot': 'Sélectionner une Place de Stationnement',
+                'parking-charges': 'Frais de Stationnement',
+                'hourly-rate': 'Tarif de base:',
+                'duration': 'Durée:',
+                'hours': 'heures',
+                'total': 'Total:',
+                'no-slots': 'Aucune place de stationnement disponible pour la date sélectionnée',
+                'error-loading': 'Erreur lors du chargement des places de stationnement. Veuillez réessayer.',
+                'slot': 'Place',
+                'available': 'Disponible',
+                'occupied': 'Occupée',
+                'select-slot': 'Sélectionner une place de stationnement',
+                'parking-rates': 'Tarifs de Stationnement',
+                'parking-rates-2w': '2-roues : ₹30/4h',
+                'parking-rates-4w': '4-roues : ₹50/4h',
+                'parking-rates-bus': 'Bus : ₹100/4h'
+            },
+            'zh': {
+                'parking-title': '停车预订',
+                'parking-subtitle': '为您的纪念碑参观预订停车位',
+                'select-monument': '选择纪念碑',
+                'monument-placeholder': '选择纪念碑',
+                'choose-monument': '选择纪念碑',
+                'monument-red-fort': '红堡',
+                'monument-qutub': '库杜布塔',
+                'monument-india-gate': '印度门',
+                'monument-taj': '泰姬陵',
+                'monument-lotus': '莲花寺',
+                'monument-jama': '贾玛清真寺',
+                'select-date': '选择日期',
+                'select-time': '选择时间段',
+                'choose-time': '选择时间段',
+                'time-9': '上午9:00',
+                'time-10': '上午10:00',
+                'time-11': '上午11:00',
+                'time-12': '下午12:00',
+                'time-13': '下午1:00',
+                'vehicle-type': '车辆类型',
+                'choose-vehicle': '选择车辆类型',
+                'vehicle-car': '汽车',
+                'vehicle-bike': '摩托车',
+                'vehicle-bus': '公共汽车',
+                'vehicle-number': '车牌号码',
+                'vehicle-number-placeholder': '输入车牌号码',
+                'driver-name': '司机姓名',
+                'driver-name-placeholder': '输入司机姓名',
+                'phone': '电话号码',
+                'phone-placeholder': '输入电话号码',
+                'book-parking': '预订停车位',
+                'select-parking-slot': '选择停车位',
+                'parking-charges': '停车费用',
+                'hourly-rate': '基本费率：',
+                'duration': '时长：',
+                'hours': '小时',
+                'total': '总计：',
+                'no-slots': '所选日期没有可用的停车位',
+                'error-loading': '加载停车位时出错。请重试。',
+                'slot': '车位',
+                'available': '可用',
+                'occupied': '已占用',
+                'select-slot': '选择停车位',
+                'parking-rates': '停车费率',
+                'parking-rates-2w': '两轮车：₹30/4小时',
+                'parking-rates-4w': '四轮车：₹50/4小时',
+                'parking-rates-bus': '公共汽车：₹100/4小时'
+            },
+            'mr': {
+                'parking-title': 'पार्किंग बुकिंग',
+                'parking-subtitle': 'आपल्या स्मारक भेटीसाठी पार्किंग स्पॉट बुक करा',
+                'select-monument': 'स्मारक निवडा',
+                'monument-placeholder': 'स्मारक निवडा',
+                'choose-monument': 'स्मारक निवडा',
+                'monument-red-fort': 'लाल किल्ला',
+                'monument-qutub': 'कुतुब मिनार',
+                'monument-india-gate': 'इंडिया गेट',
+                'monument-taj': 'ताज महल',
+                'monument-lotus': 'लोटस टेम्पल',
+                'monument-jama': 'जामा मशीद',
+                'select-date': 'दिनांक निवडा',
+                'select-time': 'वेळ स्लॉट निवडा',
+                'choose-time': 'वेळ स्लॉट निवडा',
+                'time-9': 'सकाळी 9:00',
+                'time-10': 'सकाळी 10:00',
+                'time-11': 'सकाळी 11:00',
+                'time-12': 'दुपारी 12:00',
+                'time-13': 'दुपारी 1:00',
+                'vehicle-type': 'वाहन प्रकार',
+                'choose-vehicle': 'वाहन प्रकार निवडा',
+                'vehicle-car': 'कार',
+                'vehicle-bike': 'बाईक',
+                'vehicle-bus': 'बस',
+                'vehicle-number': 'वाहन क्रमांक',
+                'vehicle-number-placeholder': 'वाहन क्रमांक टाका',
+                'driver-name': 'चालकाचे नाव',
+                'driver-name-placeholder': 'चालकाचे नाव टाका',
+                'phone': 'फोन नंबर',
+                'phone-placeholder': 'फोन नंबर टाका',
+                'book-parking': 'पार्किंग बुक करा',
+                'select-parking-slot': 'पार्किंग स्लॉट निवडा',
+                'parking-charges': 'पार्किंग शुल्क',
+                'hourly-rate': 'बेस रेट:',
+                'duration': 'कालावधी:',
+                'hours': 'तास',
+                'total': 'एकूण:',
+                'no-slots': 'निवडलेल्या तारखेसाठी पार्किंग स्लॉट उपलब्ध नाही',
+                'error-loading': 'पार्किंग स्लॉट लोड करण्यात त्रुटी. कृपया पुन्हा प्रयत्न करा.',
+                'slot': 'स्लॉट',
+                'available': 'उपलब्ध',
+                'occupied': 'व्यापलेले',
+                'select-slot': 'पार्किंग स्लॉट निवडा',
+                'parking-rates': 'पार्किंग दर',
+                'parking-rates-2w': 'दुपहिया: ₹30/4 तास',
+                'parking-rates-4w': 'चारपहिया: ₹50/4 तास',
+                'parking-rates-bus': 'बस: ₹100/4 तास'
+            }
+        };
+
+        function changeLanguage(lang) {
+            const elements = document.querySelectorAll('[data-translate]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[lang] && translations[lang][key]) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        element.placeholder = translations[lang][key];
+                    } else {
+                        element.textContent = translations[lang][key];
+                    }
+                }
+            });
+            localStorage.setItem('selectedLanguage', lang);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
+            document.getElementById('language').value = savedLanguage;
+            changeLanguage(savedLanguage);
+        });
+    </script>
+</body>
+</html> 

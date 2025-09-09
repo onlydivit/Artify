@@ -1,0 +1,401 @@
+<!-- Speech Control Panel -->
+<div id="speechControlPanel" class="speech-control-panel">
+    <div class="speech-header">
+        <h3><i class="fas fa-microphone"></i> Voice Control</h3>
+        <button onclick="toggleSpeechPanel()" class="minimize-btn">
+            <i class="fas fa-minus"></i>
+        </button>
+    </div>
+    <div class="speech-content">
+        <div class="speech-status">
+            <span id="speechStatus">Click the microphone to start</span>
+        </div>
+        <div class="speech-buttons">
+            <button id="startSpeechBtn" onclick="startSpeechRecognition()" class="speech-btn main-btn" title="Start/Stop Recording">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <button id="helpSpeechBtn" onclick="showHelp()" class="speech-btn help-btn" title="Show Available Commands">
+                <i class="fas fa-question-circle"></i>
+                <span class="btn-text">Help</span>
+            </button>
+        </div>
+        <div id="commandsList" class="commands-list hidden">
+            <h4>Available Commands:</h4>
+            <ul>
+                <li><i class="fas fa-home"></i> "Go to home"</li>
+                <li><i class="fas fa-book"></i> "Book now"</li>
+                <li><i class="fas fa-car"></i> "Parking"</li>
+                <li><i class="fas fa-graduation-cap"></i> "I am a student"</li>
+                <li><i class="fas fa-user-tie"></i> "I need a guide"</li>
+                <li><i class="fas fa-parking"></i> "I need parking"</li>
+                <li><i class="fas fa-monument"></i> "Select [monument name]"</li>
+            </ul>
+        </div>
+        <div class="speech-transcript">
+            <p id="speechText"></p>
+        </div>
+    </div>
+</div>
+
+<style>
+.speech-control-panel {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    padding: 1rem;
+    width: 300px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.speech-control-panel.minimized {
+    height: 50px;
+    overflow: hidden;
+}
+
+.speech-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.speech-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+}
+
+.minimize-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0.3rem;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.minimize-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.speech-status {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.speech-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.speech-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.speech-btn.main-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    padding: 0;
+}
+
+.speech-btn.help-btn {
+    background: #4CAF50;
+    min-width: 100px;
+}
+
+.speech-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+}
+
+.help-btn:hover {
+    background: #45a049;
+}
+
+.speech-btn.recording {
+    background: #ff4444;
+    animation: pulse 1.5s infinite;
+}
+
+.btn-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.commands-list {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.commands-list.hidden {
+    display: none;
+}
+
+.commands-list h4 {
+    margin: 0 0 0.5rem 0;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.commands-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.commands-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.85rem;
+}
+
+.commands-list i {
+    width: 20px;
+    text-align: center;
+    color: #4CAF50;
+}
+
+.speech-transcript {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.8rem;
+    border-radius: 5px;
+    margin-top: 1rem;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+.speech-transcript p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Accessibility features */
+.speech-btn:focus {
+    outline: 2px solid #ffd700;
+    outline-offset: 2px;
+}
+
+.speech-control-panel:focus-within {
+    box-shadow: 0 0 0 2px #ffd700;
+}
+
+/* Screen reader only text */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+</style>
+
+<script>
+let mediaRecorder;
+let audioChunks = [];
+let isRecording = false;
+
+function toggleSpeechPanel() {
+    const panel = document.getElementById('speechControlPanel');
+    panel.classList.toggle('minimized');
+}
+
+function toggleCommandsList() {
+    const commandsList = document.getElementById('commandsList');
+    commandsList.classList.toggle('hidden');
+}
+
+async function startSpeechRecognition() {
+    const startBtn = document.getElementById('startSpeechBtn');
+    const statusText = document.getElementById('speechStatus');
+    
+    if (isRecording) {
+        // Stop recording
+        mediaRecorder.stop();
+        startBtn.classList.remove('recording');
+        statusText.textContent = 'Processing...';
+        isRecording = false;
+        return;
+    }
+
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        statusText.textContent = 'Listening...';
+        startBtn.classList.add('recording');
+        isRecording = true;
+
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+
+        mediaRecorder.ondataavailable = (event) => {
+            audioChunks.push(event.data);
+        };
+
+        mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            await processAudio(audioBlob);
+            stream.getTracks().forEach(track => track.stop());
+        };
+
+        mediaRecorder.start();
+    } catch (error) {
+        console.error('Error accessing microphone:', error);
+        statusText.textContent = 'Error accessing microphone';
+    }
+}
+
+async function processAudio(audioBlob) {
+    const formData = new FormData();
+    formData.append('audio', audioBlob);
+
+    try {
+        const response = await fetch('/process_speech', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            // Display recognized text
+            document.getElementById('speechText').textContent = `You said: ${data.text}`;
+            document.getElementById('speechStatus').textContent = data.response;
+
+            // Play audio response
+            const audio = new Audio(`data:audio/mp3;base64,${data.audio}`);
+            await audio.play();
+
+            // Execute command
+            executeCommand(data.response);
+        } else {
+            document.getElementById('speechStatus').textContent = data.error;
+        }
+    } catch (error) {
+        console.error('Error processing audio:', error);
+        document.getElementById('speechStatus').textContent = 'Error processing audio';
+    }
+}
+
+async function showHelp() {
+    try {
+        const response = await fetch('/speech_help');
+        const data = await response.json();
+        
+        let helpText = 'Available Commands:\n\n';
+        
+        data.commands.forEach(cmd => {
+            helpText += `${cmd.command}: ${cmd.description}\n`;
+        });
+        
+        helpText += '\nKeyboard Shortcuts:\n';
+        data.shortcuts.forEach(shortcut => {
+            helpText += `${shortcut.key}: ${shortcut.description}\n`;
+        });
+        
+        alert(helpText);
+        toggleCommandsList();
+    } catch (error) {
+        console.error('Error fetching help:', error);
+        alert('Error loading help information');
+    }
+}
+
+function executeCommand(response) {
+    if (response.includes('Navigating to home')) {
+        window.location.href = "{{ url_for('home') }}";
+    }
+    else if (response.includes('Opening booking form')) {
+        window.location.href = "{{ url_for('booking') }}";
+    }
+    else if (response.includes('Opening parking reservation')) {
+        window.location.href = "{{ url_for('parking') }}";
+    }
+    else if (response.includes('Logging out')) {
+        window.location.href = "{{ url_for('logout') }}";
+    }
+    else if (response.includes('Student discount')) {
+        const studentCheckbox = document.getElementById('is_student');
+        if (studentCheckbox) studentCheckbox.checked = true;
+    }
+    else if (response.includes('Tour guide service')) {
+        const guideCheckbox = document.getElementById('need_guide');
+        if (guideCheckbox) guideCheckbox.checked = true;
+    }
+    else if (response.includes('Parking will be reserved')) {
+        const parkingCheckbox = document.getElementById('need_parking');
+        if (parkingCheckbox) parkingCheckbox.checked = true;
+    }
+    else if (response.includes('Selected')) {
+        const monument = response.replace('Selected ', '');
+        const monumentSelect = document.getElementById('monument');
+        if (monumentSelect) {
+            const option = Array.from(monumentSelect.options).find(opt => 
+                opt.text.toLowerCase().includes(monument.toLowerCase())
+            );
+            if (option) monumentSelect.value = option.value;
+        }
+    }
+}
+
+// Initialize keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+    // Alt + M to toggle microphone
+    if (e.altKey && e.key === 'm') {
+        startSpeechRecognition();
+    }
+    // Alt + P to toggle panel
+    else if (e.altKey && e.key === 'p') {
+        toggleSpeechPanel();
+    }
+    // Alt + H to show help
+    else if (e.altKey && e.key === 'h') {
+        showHelp();
+    }
+});
+
+// Show the panel by default
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('speechControlPanel').style.display = 'block';
+});
+</script> 

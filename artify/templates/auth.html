@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Sign Up - Artify</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <div class="form-tabs">
+                <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+                <button class="tab-btn" onclick="switchTab('signup')">Sign Up</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="form active" method="POST" action="{{ url_for('login') }}">
+                <h2>Welcome Back</h2>
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="submit-btn">Login</button>
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </form>
+
+            <!-- Sign Up Form -->
+            <form id="signup-form" class="form" method="POST" action="{{ url_for('signup') }}">
+                <h2>Create Account</h2>
+                <div class="form-group">
+                    <input type="text" name="name" id="signup-name" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" name="email" id="signup-email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password" id="signup-password" placeholder="Password" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" name="confirm_password" id="signup-confirm-password" placeholder="Confirm Password" required>
+                </div>
+                <button type="submit" class="submit-btn">Sign Up</button>
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            // Update active tab button
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Show corresponding form
+            document.querySelectorAll('.form').forEach(form => {
+                form.classList.remove('active');
+            });
+            document.getElementById(`${tab}-form`).classList.add('active');
+        }
+
+        // Add form validation
+        document.getElementById('signup-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirm-password').value;
+            
+            // Validate email format
+            if (!email || !email.includes('@') || !email.includes('.')) {
+                alert('Please enter a valid email address with @ and . characters');
+                return;
+            }
+            
+            // Validate password length
+            if (!password || password.length < 8) {
+                alert('Password must be at least 8 characters long');
+                return;
+            }
+            
+            // Validate password match
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+            
+            // If all validations pass, submit the form
+            this.submit();
+        });
+        
+        // Add real-time validation for email
+        document.getElementById('signup-email').addEventListener('input', function(e) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(this.value)) {
+                this.setCustomValidity('Please enter a valid email address with @ and . characters');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+        
+        // Add real-time validation for password
+        document.getElementById('signup-password').addEventListener('input', function(e) {
+            if (this.value.length < 8) {
+                this.setCustomValidity('Password must be at least 8 characters long');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+        
+        // Add real-time validation for confirm password
+        document.getElementById('signup-confirm-password').addEventListener('input', function(e) {
+            const password = document.getElementById('signup-password').value;
+            if (this.value !== password) {
+                this.setCustomValidity('Passwords do not match');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - Artify</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar h1 {
+            font-size: 1.5rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        .main-content {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .payment-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .payment-container h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .payment-summary {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .payment-summary h3 {
+            margin-bottom: 1rem;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .payment-methods {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .payment-method {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .payment-method:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .payment-method.selected {
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .payment-method-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .payment-method-header img {
+            width: 32px;
+            height: 32px;
+            margin-right: 1rem;
+        }
+
+        .payment-form {
+            display: none;
+        }
+
+        .payment-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .upi-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .upi-option {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .upi-option img {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 0.5rem;
+        }
+
+        .flash-message {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .summary-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+        }
+
+        .summary-section h4 {
+            margin-bottom: 0.8rem;
+            color: #ffd700;
+            font-size: 1.1rem;
+        }
+
+        .visitor-summary {
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border-left: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .summary-item.discount {
+            color: #4CAF50;
+            font-size: 0.9rem;
+        }
+
+        .total-section {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .summary-item.subtotal {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .summary-item.total {
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .summary-item.total strong {
+            color: #ffd700;
+        }
+
+        .fee-summary {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .fee-summary h3 {
+            margin-bottom: 1rem;
+        }
+
+        .fee-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .fee-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .fee-item .label {
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .fee-item .value {
+            font-size: 1rem;
+        }
+
+        .fee-item.total {
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .fee-item.total .label {
+            font-size: 1.1rem;
+        }
+
+        .fee-item.total .value {
+            font-size: 1.2rem;
+        }
+
+        .pricing-info {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+
+        .price-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .price-item span {
+            font-weight: bold;
+        }
+
+        .price-item small {
+            display: block;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .parking-rates {
+            margin-top: 0.5rem;
+        }
+
+        .parking-rates small {
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>Artify</h1>
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('booking') }}">Book Now</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-message">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="payment-container">
+            <h2>Complete Your Payment</h2>
+
+            <div class="payment-summary">
+                <h3>Booking Summary</h3>
+                <div class="summary-item">
+                    <span>Monument:</span>
+                    <span>{{ booking.monument }}</span>
+                </div>
+                <div class="summary-item">
+                    <span>Date:</span>
+                    <span>{{ booking.date }}</span>
+                </div>
+                <div class="summary-item">
+                    <span>Time Slot:</span>
+                    <span>{{ booking.time_slot }}</span>
+                </div>
+                <div class="summary-item">
+                    <span>ID Number:</span>
+                    <span>{{ booking.id_number }}</span>
+                </div>
+                <div class="summary-item">
+                    <span>Base Amount:</span>
+                    <span>₹{{ booking.base_amount }}</span>
+                </div>
+                {% if booking.need_guide %}
+                <div class="summary-item">
+                    <span>Guide Fee:</span>
+                    <span>₹300</span>
+                </div>
+                {% endif %}
+                <div class="summary-item total">
+                    <strong>Total Amount:</strong>
+                    <strong>₹{{ booking.final_amount }}</strong>
+                </div>
+            </div>
+
+            <div class="fee-summary">
+                <h3>Fee Summary</h3>
+                <div class="fee-details">
+                    <div class="fee-item">
+                        <span class="label">Entry Fee:</span>
+                        <span class="value">₹{{ booking.base_amount }}</span>
+                    </div>
+                    {% if booking.need_guide %}
+                    <div class="fee-item">
+                        <span class="label">Guide Service:</span>
+                        <span class="value">₹300</span>
+                    </div>
+                    {% endif %}
+                    <div class="fee-item total">
+                        <span class="label">Total Amount:</span>
+                        <span class="value">₹{{ booking.final_amount }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pricing-info">
+                <h3 data-translate="pricing-title">Pricing Information</h3>
+                
+                <div class="price-item student-price">
+                    <span data-translate="student-discount">Student Discount</span>
+                    <span>30% OFF</span>
+                    <small data-translate="student-id-notice">* Valid student ID required during visit</small>
+                </div>
+                <div class="price-item">
+                    <span data-translate="guide-fee">Tour Guide (optional)</span>
+                    <span>₹50</span>
+                </div>
+                <div class="price-item">
+                    <span data-translate="camera-fee">Camera Fee (if needed)</span>
+                    <span>₹50</span>
+                </div>
+                <div class="price-item">
+                    <span data-translate="parking-fees">Parking Fees (if needed)</span>
+                    <div class="parking-rates">
+                        <small data-translate="parking-2w">2-wheeler: ₹30/4hrs</small>
+                        <small data-translate="parking-4w">4-wheeler: ₹50/4hrs</small>
+                        <small data-translate="parking-bus">Bus: ₹100/4hrs</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="payment-methods">
+                <!-- Credit/Debit Card -->
+                <div class="payment-method" onclick="selectPaymentMethod('card')">
+                    <div class="payment-method-header">
+                        <img src="https://img.icons8.com/color/48/000000/credit-card.png" alt="Card">
+                        <h3>Credit / Debit Card</h3>
+                    </div>
+                    <div class="payment-form" id="card-form">
+                        <form method="POST" action="{{ url_for('process_payment') }}" id="card-payment-form">
+                            <input type="hidden" name="payment_method" value="card">
+                            <input type="hidden" name="booking_data" value='{{ booking|tojson|safe }}'>
+                            <input type="hidden" name="time_slot" value="{{ booking.time_slot }}">
+                            <input type="hidden" name="id_number" value="{{ booking.id_number }}">
+                            <input type="hidden" name="camera_required" value="{{ booking.camera_required }}">
+                            <input type="hidden" name="is_student" value="{{ booking.is_student }}">
+                            <div class="form-group">
+                                <label for="card-number">Card Number</label>
+                                <input type="text" id="card-number" name="card_number" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="expiry">Expiry Date</label>
+                                    <input type="text" id="expiry" name="expiry" placeholder="MM/YY" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cvv">CVV</label>
+                                    <input type="password" id="cvv" name="cvv" maxlength="3" placeholder="123" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="card-name">Name on Card</label>
+                                <input type="text" id="card-name" name="card_name" placeholder="John Doe" required>
+                            </div>
+                            <button type="submit" class="submit-btn">Pay ₹{{ "%.2f"|format(booking.final_amount) }}</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- UPI -->
+                <div class="payment-method" onclick="selectPaymentMethod('upi')">
+                    <div class="payment-method-header">
+                        <img src="https://img.icons8.com/color/48/000000/bhim-upi.png" alt="UPI">
+                        <h3>UPI Payment</h3>
+                    </div>
+                    <div class="payment-form" id="upi-form">
+                        <form method="POST" action="{{ url_for('process_payment') }}" id="upi-payment-form">
+                            <input type="hidden" name="payment_method" value="upi">
+                            <input type="hidden" name="booking_data" value='{{ booking|tojson|safe }}'>
+                            <input type="hidden" name="time_slot" value="{{ booking.time_slot }}">
+                            <input type="hidden" name="id_number" value="{{ booking.id_number }}">
+                            <input type="hidden" name="camera_required" value="{{ booking.camera_required }}">
+                            <input type="hidden" name="is_student" value="{{ booking.is_student }}">
+                            <div class="form-group">
+                                <label for="upi-id">UPI ID</label>
+                                <input type="text" id="upi-id" name="upi_id" placeholder="username@upi" required>
+                            </div>
+                            <div class="upi-options">
+                                <div class="upi-option" onclick="selectUPIApp('googlepay')">
+                                    <img src="https://img.icons8.com/color/48/000000/google-pay-india.png" alt="Google Pay">
+                                    <span>Google Pay</span>
+                                </div>
+                                <div class="upi-option" onclick="selectUPIApp('phonepe')">
+                                    <img src="https://img.icons8.com/color/48/000000/phonepe.png" alt="PhonePe">
+                                    <span>PhonePe</span>
+                                </div>
+                                <div class="upi-option" onclick="selectUPIApp('paytm')">
+                                    <img src="https://img.icons8.com/color/48/000000/paytm.png" alt="Paytm">
+                                    <span>Paytm</span>
+                                </div>
+                            </div>
+                            <button type="submit" class="submit-btn">Pay ₹{{ "%.2f"|format(booking.final_amount) }}</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Net Banking -->
+                <div class="payment-method" onclick="selectPaymentMethod('netbanking')">
+                    <div class="payment-method-header">
+                        <img src="https://img.icons8.com/color/48/000000/bank-building.png" alt="Net Banking">
+                        <h3>Net Banking</h3>
+                    </div>
+                    <div class="payment-form" id="netbanking-form">
+                        <form method="POST" action="{{ url_for('process_payment') }}" id="netbanking-payment-form">
+                            <input type="hidden" name="payment_method" value="netbanking">
+                            <input type="hidden" name="booking_data" value='{{ booking|tojson|safe }}'>
+                            <input type="hidden" name="time_slot" value="{{ booking.time_slot }}">
+                            <input type="hidden" name="id_number" value="{{ booking.id_number }}">
+                            <input type="hidden" name="camera_required" value="{{ booking.camera_required }}">
+                            <input type="hidden" name="is_student" value="{{ booking.is_student }}">
+                            <div class="form-group">
+                                <label for="bank">Select Bank</label>
+                                <select id="bank" name="bank" class="form-control" required>
+                                    <option value="">Select your bank</option>
+                                    <option value="sbi">State Bank of India</option>
+                                    <option value="hdfc">HDFC Bank</option>
+                                    <option value="icici">ICICI Bank</option>
+                                    <option value="axis">Axis Bank</option>
+                                    <option value="other">Other Banks</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="submit-btn">Pay ₹{{ "%.2f"|format(booking.final_amount) }}</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function selectPaymentMethod(method) {
+            // Hide all payment forms
+            document.querySelectorAll('.payment-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            
+            // Remove selected class from all payment methods
+            document.querySelectorAll('.payment-method').forEach(pm => {
+                pm.classList.remove('selected');
+            });
+            
+            // Show selected payment form and highlight the method
+            const selectedForm = document.getElementById(`${method}-form`);
+            if (selectedForm) {
+                selectedForm.classList.add('active');
+                selectedForm.closest('.payment-method').classList.add('selected');
+            }
+        }
+
+        function selectUPIApp(app) {
+            const upiInput = document.getElementById('upi-id');
+            if (!upiInput) return;
+            
+            switch(app) {
+                case 'googlepay':
+                    upiInput.value = '@okgooglepay';
+                    break;
+                case 'phonepe':
+                    upiInput.value = '@phonepe';
+                    break;
+                case 'paytm':
+                    upiInput.value = '@paytm';
+                    break;
+            }
+        }
+
+        // Format card number input
+        const cardNumberInput = document.getElementById('card-number');
+        if (cardNumberInput) {
+            cardNumberInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+                let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+                e.target.value = formattedValue.substring(0, 19);
+            });
+        }
+
+        // Format expiry date input
+        const expiryInput = document.getElementById('expiry');
+        if (expiryInput) {
+            expiryInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+                if (value.length > 2) {
+                    value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                }
+                e.target.value = value;
+            });
+        }
+
+        // Add form submission handlers
+        ['card-payment-form', 'upi-payment-form', 'netbanking-payment-form'].forEach(formId => {
+            const form = document.getElementById(formId);
+            if (!form) return;
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Show loading state
+                const submitBtn = this.querySelector('.submit-btn');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Processing...';
+                submitBtn.disabled = true;
+
+                // Get form data
+                const formData = new FormData(this);
+                const paymentData = {
+                    payment_method: formData.get('payment_method'),
+                    booking_data: JSON.parse(formData.get('booking_data')),
+                    time_slot: formData.get('time_slot'),
+                    id_number: formData.get('id_number'),
+                    camera_required: formData.get('camera_required'),
+                    is_student: formData.get('is_student'),
+                    // Add payment-specific data based on payment method
+                    ...(formData.get('payment_method') === 'card' ? {
+                        card_number: formData.get('card_number'),
+                        expiry: formData.get('expiry'),
+                        cvv: formData.get('cvv'),
+                        card_name: formData.get('card_name')
+                    } : {}),
+                    ...(formData.get('payment_method') === 'upi' ? {
+                        upi_id: formData.get('upi_id')
+                    } : {}),
+                    ...(formData.get('payment_method') === 'netbanking' ? {
+                        bank: formData.get('bank')
+                    } : {})
+                };
+
+                // Submit payment
+                fetch('/process_payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(paymentData)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Show success message
+                        const successDiv = document.createElement('div');
+                        successDiv.className = 'success-message';
+                        successDiv.textContent = 'Payment successful! Redirecting...';
+                        form.appendChild(successDiv);
+                        
+                        // Redirect to confirmation page
+                        setTimeout(() => {
+                            window.location.href = data.redirect_url;
+                        }, 1500);
+                    } else {
+                        throw new Error(data.error || 'Payment failed. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    // Show error message
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'error-message';
+                    errorDiv.textContent = error.message;
+                    form.appendChild(errorDiv);
+                    
+                    // Reset button state
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                });
+            });
+        });
+
+        // Initialize the first payment method as selected
+        window.addEventListener('DOMContentLoaded', function() {
+            selectPaymentMethod('card');
+        });
+    </script>
+</body>
+</html> 

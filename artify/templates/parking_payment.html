@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking Payment - Artify</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar h1 {
+            font-size: 1.5rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        .main-content {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .payment-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .payment-header h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .booking-details {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .detail-item {
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            opacity: 0.9;
+        }
+
+        .payment-methods {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .payment-method {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-method:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .payment-method.selected {
+            background: rgba(33, 150, 243, 0.2);
+            border: 2px solid #2196F3;
+        }
+
+        .payment-method img {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
+
+        .payment-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1.2rem;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .payment-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .payment-button:active {
+            transform: translateY(0);
+        }
+
+        .payment-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .payment-button i {
+            font-size: 1.4rem;
+        }
+
+        .total-amount {
+            font-size: 1.5rem;
+            text-align: center;
+            margin: 2rem 0;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .amount-breakdown {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .payment-error {
+            color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .payment-success {
+            color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .processing {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>Artify</h1>
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('booking') }}">Book Now</a>
+            <a href="{{ url_for('parking') }}">Parking</a>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <div class="payment-container">
+            <div class="payment-header">
+                <h2>Parking Payment</h2>
+                <p>Complete your payment to confirm your parking reservation</p>
+            </div>
+
+            <div class="booking-details">
+                <div class="detail-item">
+                    <span class="detail-label">Monument:</span>
+                    <span>{{ booking.monument }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Date:</span>
+                    <span>{{ booking.date }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Vehicle Type:</span>
+                    <span>{{ booking.vehicle_type }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Vehicle Number:</span>
+                    <span>{{ booking.vehicle_number }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Driver Name:</span>
+                    <span>{{ booking.driver_name }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Phone:</span>
+                    <span>{{ booking.phone }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Slot Number:</span>
+                    <span>{{ booking.slot_number }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Duration:</span>
+                    <span>{{ booking.duration }} hours</span>
+                </div>
+            </div>
+
+            <div class="total-amount">
+                <div>Total Amount</div>
+                <div style="font-size: 2rem; font-weight: bold;">₹{{ "%.2f"|format(booking.amount) }}</div>
+                <div class="amount-breakdown">
+                    (₹{{ booking.hourly_rate }} × {{ booking.duration }} hours)
+                </div>
+            </div>
+
+            <div id="payment-error" class="payment-error"></div>
+            <div id="payment-success" class="payment-success"></div>
+
+            <form id="parking-payment-form" onsubmit="handleParkingPayment(event)" autocomplete="off">
+                <input type="hidden" name="monument" value="{{ booking.monument }}">
+                <input type="hidden" name="date" value="{{ booking.date }}">
+                <input type="hidden" name="vehicle_type" value="{{ booking.vehicle_type }}">
+                <input type="hidden" name="vehicle_number" value="{{ booking.vehicle_number }}">
+                <input type="hidden" name="driver_name" value="{{ booking.driver_name }}">
+                <input type="hidden" name="phone" value="{{ booking.phone }}">
+                <input type="hidden" name="slot_number" value="{{ booking.slot_number }}">
+                <input type="hidden" name="duration" value="{{ booking.duration }}">
+                <input type="hidden" name="amount" value="{{ booking.amount }}">
+                <input type="hidden" id="booking-data" name="booking_data">
+                
+                <div class="payment-methods">
+                    <div class="payment-method" onclick="selectPaymentMethod('upi')">
+                        <input type="radio" name="payment_method" id="upi" value="UPI" required>
+                        <label for="upi">
+                            <i class="fas fa-mobile-alt"></i>
+                            UPI
+                        </label>
+                    </div>
+                    <div class="payment-method" onclick="selectPaymentMethod('card')">
+                        <input type="radio" name="payment_method" id="card" value="Card" required>
+                        <label for="card">
+                            <i class="fas fa-credit-card"></i>
+                            Card
+                        </label>
+                    </div>
+                    <div class="payment-method" onclick="selectPaymentMethod('netbanking')">
+                        <input type="radio" name="payment_method" id="netbanking" value="Net Banking" required>
+                        <label for="netbanking">
+                            <i class="fas fa-university"></i>
+                            Net Banking
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" id="payment-button" class="payment-button">
+                    <i class="fas fa-lock"></i>
+                    Pay ₹{{ "%.2f"|format(booking.amount) }}
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function selectPaymentMethod(method) {
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.remove('selected');
+            });
+            document.getElementById(method).closest('.payment-method').classList.add('selected');
+            document.getElementById(method).checked = true;
+        }
+
+        async function handleParkingPayment(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const submitButton = document.getElementById('payment-button');
+            const errorDiv = document.getElementById('payment-error');
+            const successDiv = document.getElementById('payment-success');
+            
+            // Reset status
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            
+            // Check if payment method is selected
+            const paymentMethod = form.querySelector('input[name="payment_method"]:checked');
+            if (!paymentMethod) {
+                errorDiv.textContent = 'Please select a payment method';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            // Show processing state
+            form.classList.add('processing');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Processing...';
+            
+            try {
+                const formData = new FormData(form);
+                const response = await fetch('/process_parking_payment', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                console.log('Payment response:', result); // Debug log
+
+                if (result.success) {
+                    successDiv.textContent = 'Payment successful! Redirecting...';
+                    successDiv.style.display = 'block';
+                    
+                    // Add a small delay before redirecting
+                    setTimeout(() => {
+                        window.location.href = result.redirect_url;
+                    }, 1500);
+                } else {
+                    throw new Error(result.error || 'Payment failed. Please try again.');
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                errorDiv.textContent = error.message || 'An error occurred. Please try again.';
+                errorDiv.style.display = 'block';
+                form.classList.remove('processing');
+                submitButton.disabled = false;
+                submitButton.textContent = `Pay ₹{{ "%.2f"|format(booking.amount) }}`;
+            }
+        }
+
+        // Initialize booking data when page loads
+        window.onload = function() {
+            try {
+                const bookingData = {
+                    'monument': '{{ booking.monument }}',
+                    'date': '{{ booking.date }}',
+                    'vehicle_type': '{{ booking.vehicle_type }}',
+                    'vehicle_number': '{{ booking.vehicle_number }}',
+                    'driver_name': '{{ booking.driver_name }}',
+                    'phone': '{{ booking.phone }}',
+                    'slot_number': parseInt('{{ booking.slot_number }}'),
+                    'duration': parseInt('{{ booking.duration }}'),
+                    'amount': parseFloat('{{ booking.amount }}'),
+                    'hourly_rate': parseFloat('{{ booking.hourly_rate }}')
+                };
+                
+                // Validate the data
+                if (!bookingData.monument || !bookingData.date || !bookingData.vehicle_type ||
+                    !bookingData.vehicle_number || !bookingData.driver_name || !bookingData.phone ||
+                    isNaN(bookingData.slot_number) || isNaN(bookingData.duration)) {
+                    throw new Error('Invalid booking data. Please try again.');
+                }
+                
+                // Set the booking data in the hidden input
+                const bookingDataInput = document.getElementById('booking-data');
+                if (bookingDataInput) {
+                    bookingDataInput.value = JSON.stringify(bookingData);
+                } else {
+                    throw new Error('Booking data input field not found');
+                }
+            } catch (error) {
+                console.error('Error initializing booking data:', error);
+                const errorDiv = document.getElementById('payment-error');
+                errorDiv.textContent = error.message || 'Error loading booking data. Please try again.';
+                errorDiv.style.display = 'block';
+                document.getElementById('payment-button').disabled = true;
+            }
+        };
+    </script>
+</body>
+</html> 

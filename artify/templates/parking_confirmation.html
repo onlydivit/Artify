@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking Confirmation - Artify</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar h1 {
+            font-size: 1.5rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        .main-content {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .confirmation-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .confirmation-header {
+            margin-bottom: 2rem;
+        }
+
+        .confirmation-header h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #4CAF50;
+        }
+
+        .confirmation-details {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: left;
+            animation: slideIn 0.5s ease-out 0.2s both;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .detail-item {
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            opacity: 0.9;
+        }
+
+        .qr-code {
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            display: inline-block;
+            margin: 2rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: scaleIn 0.5s ease-out 0.4s both;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .qr-code img {
+            max-width: 200px;
+            height: auto;
+            display: block;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            animation: fadeIn 0.5s ease-out 0.6s both;
+        }
+
+        .action-button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            color: #4CAF50;
+            margin-bottom: 1rem;
+            animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 0.9;
+                transform: scale(1.1);
+            }
+            80% {
+                opacity: 1;
+                transform: scale(0.89);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .print-instructions {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            animation: fadeIn 0.5s ease-out 0.8s both;
+        }
+
+        .error-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .error-icon {
+            font-size: 4rem;
+            color: #e74c3c;
+            margin-bottom: 1rem;
+            animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .retry-button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .retry-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>Artify</h1>
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('booking') }}">Book Now</a>
+            <a href="{{ url_for('parking') }}">Parking</a>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        {% if error %}
+        <div class="error-container">
+            <i class="fas fa-exclamation-circle error-icon"></i>
+            <h2>Reservation Failed</h2>
+            <p class="error-message">{{ error }}</p>
+            <a href="{{ url_for('parking') }}" class="retry-button">
+                <i class="fas fa-redo"></i> Try Again
+            </a>
+        </div>
+        {% else %}
+        <div class="confirmation-container">
+            <div class="confirmation-header">
+                <i class="fas fa-check-circle success-icon"></i>
+                <h2>Parking Reserved Successfully!</h2>
+                <p>Your parking spot has been confirmed. Please save your QR code.</p>
+            </div>
+
+            <div class="confirmation-details">
+                <div class="detail-item">
+                    <span class="detail-label">Monument:</span>
+                    <span>{{ reservation.monument }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Date:</span>
+                    <span>{{ reservation.reservation_date }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Vehicle Type:</span>
+                    <span>{{ reservation.vehicle_type }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Vehicle Number:</span>
+                    <span>{{ reservation.vehicle_number }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Driver Name:</span>
+                    <span>{{ reservation.driver_name }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Phone:</span>
+                    <span>{{ reservation.phone }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Slot Number:</span>
+                    <span>{{ reservation.slot_id }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Duration:</span>
+                    <span>{{ reservation.duration }} hours</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Amount Paid:</span>
+                    <span>₹{{ "%.2f"|format(reservation.amount) }}</span>
+                </div>
+            </div>
+
+            <div class="qr-code">
+                <img src="data:image/png;base64,{{ qr_code }}" alt="Parking QR Code">
+            </div>
+
+            <div class="print-instructions">
+                <i class="fas fa-info-circle"></i> Please keep this QR code handy when you arrive at the monument. You can either print it or show it on your mobile device.
+            </div>
+
+            <div class="action-buttons">
+                <a href="{{ url_for('home') }}" class="action-button">
+                    <i class="fas fa-home"></i> Go to Home
+                </a>
+                <a href="#" onclick="window.print()" class="action-button">
+                    <i class="fas fa-print"></i> Print QR Code
+                </a>
+                <a href="data:image/png;base64,{{ qr_code }}" download="parking_qr_code.png" class="action-button">
+                    <i class="fas fa-download"></i> Download QR
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html> 
