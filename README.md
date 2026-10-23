@@ -72,8 +72,6 @@ Monument Details – Access historical info, tips, audio guides
 
 Parking Management – Reserve spots in advance
 
-Payment Processing – Choose payment method and confirm booking
-
 Confirmation Page – Receive QR code and booking summary
 
 User Interface
@@ -103,7 +101,7 @@ Register as a user or log in.
 
 Browse monuments and available slots.
 
-Book tickets, reserve parking, and complete payment.
+Book tickets, reserve parking and get confirmation.
 
 Receive a QR code for entry.
 
