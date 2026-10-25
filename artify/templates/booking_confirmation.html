@@ -207,6 +207,7 @@
         <h1>Artify</h1>
         <div class="nav-links">
             <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('my_bookings') }}">My Bookings</a>
             <a href="{{ url_for('booking') }}">Book Now</a>
             <a href="{{ url_for('logout') }}">Logout</a>
         </div>
@@ -289,9 +290,14 @@
                     <p>Please show this QR code at the monument entrance for verification.</p>
                     <p>You can download or take a screenshot of this QR code for offline access.</p>
                 </div>
-                <a href="{{ qr_code }}" download="booking_qr.png" class="download-button">
-                    Download QR Code
-                </a>
+                <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:1rem;">
+                    <a href="{{ qr_code }}" download="booking_qr.png" class="download-button">
+                        Download QR Code
+                    </a>
+                    <a href="{{ url_for('download_ticket', booking_id=booking.id) }}" class="download-button" style="background:#2196F3;" target="_blank">
+                        🎫 Download Full Ticket
+                    </a>
+                </div>
                 {% else %}
                 <div class="error-message">
                     <p>QR code generation failed. Please contact support.</p>

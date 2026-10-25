@@ -7,7 +7,7 @@ parent_dir = os.path.dirname(os.path.dirname(current_dir))
 if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
-from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, send_file
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, send_file, make_response
 from functools import wraps
 import qrcode
 import io
@@ -1377,6 +1377,79 @@ def not_found_error(error):
 def internal_error(error):
     db.session.rollback()  # Roll back db session in case of errors
     return render_template('500.html'), 500
+
+# ─── Issue #3: Booking History ───────────────────────────────────────────────
+@app.route('/my-bookings')
+def my_bookings():
+    if 'user_id' not in session:
+        flash('Please login to view your bookings')
+        return redirect(url_for('auth'))
+    user_id = session['user_id']
+    bookings = Booking.query.filter_by(user_id=user_id).order_by(Booking.created_at.desc()).all()
+    today = datetime.now().date()
+    booking_list = []
+    for b in bookings:
+        d = b.to_dict()
+        d['status'] = 'upcoming' if b.visit_date >= today else 'past'
+        booking_list.append(d)
+    return render_template('my_bookings.html', bookings=booking_list, today=str(today))
+
+# ─── Issue #4: Booking Cancellation ──────────────────────────────────────────
+@app.route('/cancel-booking/<int:booking_id>', methods=['POST'])
+def cancel_booking(booking_id):
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'error': 'Not logged in'})
+    booking = get_booking_by_id(booking_id)
+    if not booking:
+        return jsonify({'success': False, 'error': 'Booking not found'})
+    if booking.user_id != session['user_id']:
+        return jsonify({'success': False, 'error': 'Unauthorized'})
+    today = datetime.now().date()
+    if booking.visit_date < today:
+        return jsonify({'success': False, 'error': 'Cannot cancel past bookings'})
+    if booking.payment_status == 'cancelled':
+        return jsonify({'success': False, 'error': 'Booking already cancelled'})
+    try:
+        booking.payment_status = 'cancelled'
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Booking cancelled successfully'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)})
+
+# ─── Issue #6: Download Ticket (printable HTML page) ─────────────────────────
+@app.route('/download-ticket/<int:booking_id>')
+def download_ticket(booking_id):
+    if 'user_id' not in session:
+        flash('Please login to download your ticket')
+        return redirect(url_for('auth'))
+    booking = get_booking_by_id(booking_id)
+    if not booking:
+        flash('Booking not found')
+        return redirect(url_for('my_bookings'))
+    if booking.user_id != session['user_id']:
+        flash('Unauthorized')
+        return redirect(url_for('my_bookings'))
+    qr_code_url = f"data:image/png;base64,{booking.qr_code}" if booking.qr_code else None
+    booking_dict = booking.to_dict()
+    booking_dict['user'] = {'name': booking.user.name, 'email': booking.user.email}
+    return render_template('ticket.html', booking=booking_dict, qr_code=qr_code_url)
+
+# ─── Issue #7: Visitor Count API ─────────────────────────────────────────────
+@app.route('/api/visitor-counts')
+def visitor_counts():
+    """Return total confirmed visitor counts per monument"""
+    try:
+        results = db.session.query(
+            Booking.monument,
+            db.func.count(Booking.id).label('booking_count')
+        ).filter(
+            Booking.payment_status == 'completed'
+        ).group_by(Booking.monument).all()
+        counts = {row.monument: row.booking_count for row in results}
+        return jsonify(counts)
+    except Exception as e:
+        return jsonify({})
 
 @app.route('/store_booking', methods=['POST'])
 def store_booking():
