@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Profile - Artify</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Inter,sans-serif;background:linear-gradient(135deg,#30241f 0%,#57392f 50%,#40302a 100%);min-height:100vh;color:#e2e8f0}
+.navbar{background:rgba(255,255,255,.05);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.1);padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
+.nb{font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,#d2ad6d,#ad6949);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nl{display:flex;gap:.5rem;align-items:center}
+.nl a{color:rgba(255,255,255,.75);text-decoration:none;padding:.5rem 1rem;border-radius:8px;font-size:.9rem;font-weight:500;transition:all .2s;display:flex;align-items:center;gap:.4rem}
+.nl a:hover{background:rgba(255,255,255,.1);color:#fff}
+.nl a.ac{background:rgba(167,139,250,.2);color:#d2ad6d}
+.nbtn{background:linear-gradient(135deg,#d2ad6d,#ad6949);color:#fff;padding:.5rem 1.2rem;border-radius:8px;font-size:.9rem;font-weight:600;text-decoration:none}
+.mc{max-width:1100px;margin:2.5rem auto;padding:0 1.5rem}
+.ph{background:rgba(255,255,255,.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:2.5rem;display:flex;align-items:center;gap:2rem;margin-bottom:2rem}
+.av{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#d2ad6d,#ad6949);display:flex;align-items:center;justify-content:center;font-size:2.5rem;font-weight:700;color:#fff;flex-shrink:0;box-shadow:0 0 30px rgba(167,139,250,.4)}
+.hi{flex:1}.hn{font-size:2rem;font-weight:800;color:#fff;margin-bottom:.3rem}
+.he{color:rgba(255,255,255,.6);font-size:.95rem;margin-bottom:.5rem}
+.hb{display:inline-flex;align-items:center;gap:.4rem;background:rgba(167,139,250,.2);color:#d2ad6d;border:1px solid rgba(167,139,250,.3);padding:.3rem .8rem;border-radius:20px;font-size:.8rem;font-weight:600;margin-top:.5rem}
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.sc{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:1.5rem;text-align:center;backdrop-filter:blur(10px);transition:transform .2s,border-color .2s}
+.sc:hover{transform:translateY(-3px);border-color:rgba(167,139,250,.4)}
+.si{font-size:1.8rem;margin-bottom:.5rem}.sv{font-size:2rem;font-weight:800;color:#fff}.sl{font-size:.8rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em}
+.tc{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:1.8rem;backdrop-filter:blur(10px)}
+.ct{font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:1.5rem;display:flex;align-items:center;gap:.5rem}
+.ct i{color:#d2ad6d}
+.fg{margin-bottom:1.2rem}
+.fl{display:block;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem}
+.fi{width:100%;padding:.75rem 1rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;font-size:.95rem;font-family:Inter,sans-serif;transition:border-color .2s;outline:none}
+.fi:focus{border-color:rgba(167,139,250,.6);background:rgba(255,255,255,.1)}
+.fi::placeholder{color:rgba(255,255,255,.3)}
+.fi[readonly]{opacity:.5;cursor:not-allowed}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.5rem;border-radius:10px;font-size:.9rem;font-weight:600;cursor:pointer;border:none;transition:all .2s;font-family:Inter,sans-serif;text-decoration:none}
+.bp{background:linear-gradient(135deg,#d2ad6d,#ad6949);color:#fff}.bp:hover{opacity:.85}
+.bd{background:rgba(239,68,68,.2);color:#f87171;border:1px solid rgba(239,68,68,.3)}.bd:hover{background:rgba(239,68,68,.35)}
+.bf{width:100%;justify-content:center}
+.rb{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:1rem 1.2rem;margin-bottom:.75rem;display:flex;justify-content:space-between;align-items:center;transition:background .2s}
+.rb:hover{background:rgba(255,255,255,.08)}
+.rn{font-weight:600;color:#fff;font-size:.95rem}.rd{font-size:.8rem;color:rgba(255,255,255,.5);margin-top:.2rem}.ra{font-weight:700;color:#d2ad6d}
+.badge{padding:.25rem .6rem;border-radius:20px;font-size:.75rem;font-weight:600;text-transform:uppercase}
+.bs{background:rgba(34,197,94,.2);color:#86efac}.bw{background:rgba(234,179,8,.2);color:#fde047}.be{background:rgba(239,68,68,.2);color:#f87171}
+.toast{position:fixed;bottom:2rem;right:2rem;background:#493128;border:1px solid rgba(167,139,250,.3);border-radius:12px;padding:1rem 1.5rem;color:#fff;font-weight:500;z-index:9999;transform:translateY(100px);opacity:0;transition:all .3s;display:flex;align-items:center;gap:.75rem;min-width:280px}
+.toast.show{transform:translateY(0);opacity:1}.toast.error{border-color:rgba(239,68,68,.4)}
+.dv{height:1px;background:rgba(255,255,255,.08);margin:1.2rem 0}
+.ir{display:flex;justify-content:space-between;align-items:center;padding:.6rem 0}
+.ir .lb{font-size:.85rem;color:rgba(255,255,255,.5)}.ir .vl{font-size:.9rem;font-weight:600;color:#fff}
+.fm{background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.3);border-radius:10px;padding:.9rem 1.2rem;margin-bottom:1.5rem;color:#c4b5fd}
+@media(max-width:768px){.sg{grid-template-columns:repeat(2,1fr)}.tc{grid-template-columns:1fr}.ph{flex-direction:column;text-align:center}}
+</style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/heritage-pattern.css') }}">
+</head>
+<body>
+<nav class="navbar">
+<span class="nb">&#127963; Artify</span>
+<div class="nl">
+<a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a>
+<a href="{{ url_for('booking') }}"><i class="fas fa-ticket-alt"></i> Book</a>
+<a href="{{ url_for('my_bookings') }}"><i class="fas fa-history"></i> My Bookings</a>
+<a href="{{ url_for('profile') }}" class="ac"><i class="fas fa-user"></i> Profile</a>
+<a href="{{ url_for('logout') }}" class="nbtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+</div>
+</nav>
+<div class="mc">
+{% with messages = get_flashed_messages() %}{% if messages %}{% for msg in messages %}<div class="fm">{{ msg }}</div>{% endfor %}{% endif %}{% endwith %}
+<div class="ph">
+<div class="av">{{ user.name[0].upper() }}</div>
+<div class="hi">
+<div class="hn">{{ user.name }}</div>
+<div class="he">{{ user.email }}</div>
+{% if user.phone %}<div style="color:rgba(255,255,255,.5);font-size:.9rem;margin-bottom:.3rem">{{ user.phone }}</div>{% endif %}
+<div class="hb"><i class="fas fa-calendar-alt"></i> Member since {{ user.created_at.strftime('%B %Y') }}</div>
+</div>
+<a href="{{ url_for('my_bookings') }}" class="btn bp"><i class="fas fa-history"></i> View All Bookings</a>
+</div>
+<div class="sg">
+<div class="sc"><div class="si">&#127915;</div><div class="sv">{{ stats.total }}</div><div class="sl">Total Bookings</div></div>
+<div class="sc"><div class="si">&#9989;</div><div class="sv">{{ stats.completed }}</div><div class="sl">Completed</div></div>
+<div class="sc"><div class="si">&#128197;</div><div class="sv">{{ stats.upcoming }}</div><div class="sl">Upcoming</div></div>
+<div class="sc"><div class="si">&#10060;</div><div class="sv">{{ stats.cancelled }}</div><div class="sl">Cancelled</div></div>
+</div>
+<div class="tc">
+<div>
+<div class="card" style="margin-bottom:1.5rem">
+<div class="ct"><i class="fas fa-user-edit"></i> Edit Profile</div>
+<form id="profileForm">
+<div class="fg"><label class="fl">Full Name</label><input type="text" name="name" class="fi" value="{{ user.name }}" required></div>
+<div class="fg"><label class="fl">Email</label><input type="email" class="fi" value="{{ user.email }}" readonly title="Email cannot be changed"></div>
+<div class="fg"><label class="fl">Phone Number</label><input type="tel" name="phone" class="fi" value="{{ user.phone or '' }}" placeholder="+91 98765 43210"></div>
+<div class="ir"><span class="lb">Account Type</span><span class="vl">{% if user.is_admin %}Admin{% else %}Standard User{% endif %}</span></div>
+<div class="dv"></div>
+<button type="submit" class="btn bp bf" id="saveProfileBtn"><i class="fas fa-save"></i> Save Changes</button>
+</form>
+</div>
+<div class="card">
+<div class="ct"><i class="fas fa-lock"></i> Change Password</div>
+<form id="passwordForm">
+<div class="fg"><label class="fl">Current Password</label><input type="password" name="current_password" class="fi" placeholder="Current password" required></div>
+<div class="fg"><label class="fl">New Password</label><input type="password" id="np" name="new_password" class="fi" placeholder="Min 8 characters" required></div>
+<div class="fg"><label class="fl">Confirm New Password</label><input type="password" id="cp" name="confirm_password" class="fi" placeholder="Repeat new password" required></div>
+<button type="submit" class="btn bd bf" id="changePassBtn"><i class="fas fa-key"></i> Change Password</button>
+</form>
+</div>
+</div>
+<div>
+<div class="card" style="margin-bottom:1.5rem">
+<div class="ct"><i class="fas fa-history"></i> Recent Bookings</div>
+{% if recent_bookings %}
+{% for b in recent_bookings %}
+<div class="rb">
+<div><div class="rn">{{ b.monument }}</div><div class="rd">{{ b.visit_date }} &nbsp; {{ b.time_slot }}</div></div>
+<div style="text-align:right"><div class="ra">Rs.{{ '%.0f'|format(b.final_amount) }}</div>
+{% if b.payment_status == 'cancelled' %}<span class="badge be">Cancelled</span>
+{% elif b.status == 'upcoming' %}<span class="badge bs">Upcoming</span>
+{% else %}<span class="badge bw">Visited</span>{% endif %}</div>
+</div>
+{% endfor %}
+<div style="margin-top:1rem;text-align:center"><a href="{{ url_for('my_bookings') }}" class="btn bp"><i class="fas fa-list"></i> View All</a></div>
+{% else %}
+<div style="text-align:center;padding:2rem;color:rgba(255,255,255,.4)"><i class="fas fa-ticket-alt" style="font-size:2rem;display:block;margin-bottom:1rem"></i><p>No bookings yet.</p><a href="{{ url_for('booking') }}" class="btn bp" style="margin-top:1rem">Book Now</a></div>
+{% endif %}
+</div>
+<div class="card">
+<div class="ct"><i class="fas fa-info-circle"></i> Account Details</div>
+<div class="ir"><span class="lb">User ID</span><span class="vl">#{{ user.id }}</span></div>
+<div class="dv"></div>
+<div class="ir"><span class="lb">Joined</span><span class="vl">{{ user.created_at.strftime('%d %b %Y') }}</span></div>
+<div class="dv"></div>
+<div class="ir"><span class="lb">Total Spent</span><span class="vl" id="ts">Loading...</span></div>
+<div class="dv"></div>
+<div class="ir"><span class="lb">Favorite Monument</span><span class="vl" id="favmon">--</span></div>
+</div>
+</div>
+</div>
+</div>
+<div class="toast" id="toast"><span id="ti">ok</span>&nbsp;<span id="tm">Message</span></div>
+<script>
+const bks={{ recent_bookings|tojson|safe }};
+const totalS=bks.reduce((a,b)=>b.payment_status!=='cancelled'?a+(b.final_amount||0):a,0);
+document.getElementById('ts').textContent='Rs.'+totalS.toFixed(0);
+const mc={};bks.forEach(b=>{if(b.payment_status!=='cancelled')mc[b.monument]=(mc[b.monument]||0)+1});
+const fm=Object.entries(mc).sort((a,b)=>b[1]-a[1])[0];
+document.getElementById('favmon').textContent=fm?fm[0]:'--';
+function showToast(m,t){const el=document.getElementById('toast');document.getElementById('tm').textContent=m;document.getElementById('ti').textContent=t==='success'?'OK':'ERR';el.className='toast show'+(t==='error'?' error':'');setTimeout(()=>el.classList.remove('show'),3500)}
+document.getElementById('profileForm').addEventListener('submit',async function(e){e.preventDefault();const b=document.getElementById('saveProfileBtn');b.innerHTML='Saving...';b.disabled=true;try{const r=await fetch('/update_profile',{method:'POST',body:new FormData(this)});const d=await r.json();showToast(d.success?(d.message||'Saved!'):(d.error||'Error'),d.success?'success':'error')}catch{showToast('Network error','error')}b.innerHTML='<i class="fas fa-save"></i> Save Changes';b.disabled=false});
+document.getElementById('passwordForm').addEventListener('submit',async function(e){e.preventDefault();if(document.getElementById('np').value!==document.getElementById('cp').value){showToast('Passwords do not match','error');return}const b=document.getElementById('changePassBtn');b.innerHTML='Changing...';b.disabled=true;try{const r=await fetch('/change_password',{method:'POST',body:new FormData(this)});const d=await r.json();showToast(d.success?(d.message||'Changed!'):(d.error||'Error'),d.success?'success':'error');if(d.success)this.reset()}catch{showToast('Network error','error')}b.innerHTML='<i class="fas fa-key"></i> Change Password';b.disabled=false});
+</script>
+</body>
+</html>

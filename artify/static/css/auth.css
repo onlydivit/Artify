@@ -6,7 +6,7 @@
 }
 
 body {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #9b513c 0%, #6a3028 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -45,8 +45,8 @@ body {
 }
 
 .tab-btn.active {
-    color: #667eea;
-    border-bottom: 2px solid #667eea;
+    color: #9b513c;
+    border-bottom: 2px solid #9b513c;
     margin-bottom: -2px;
 }
 
@@ -79,13 +79,13 @@ input {
 
 input:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #9b513c;
 }
 
 .submit-btn {
     width: 100%;
     padding: 12px;
-    background: #667eea;
+    background: #9b513c;
     color: white;
     border: none;
     border-radius: 5px;
@@ -96,7 +96,7 @@ input:focus {
 }
 
 .submit-btn:hover {
-    background: #764ba2;
+    background: #6a3028;
 }
 
 .alert {

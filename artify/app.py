@@ -7,7 +7,7 @@ parent_dir = os.path.dirname(os.path.dirname(current_dir))
 if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
-from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, send_file
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, send_file, make_response
 from functools import wraps
 import qrcode
 import io
@@ -18,6 +18,7 @@ import socket
 import json
 import uuid
 import tempfile
+import re
 
 # Import local modules
 from auth import (
@@ -464,6 +465,32 @@ MONUMENTS_DATA = {
     }
 }
 
+def get_monument_fees(monument_name):
+    # Derive separate Indian and foreign ticket rates from the configured monument fee.
+    """Return configured Indian and foreign entry fees for a monument."""
+    entry_fee = MONUMENTS_DATA.get(monument_name, {}).get('entry_fee', '')
+    indian_match = re.search(r'₹\s*(\d+)\s*for Indian(?:s| visitors?)', entry_fee, re.IGNORECASE)
+    foreign_match = re.search(r'₹\s*(\d+)\s*for Foreign(?:ers?| visitors?)', entry_fee, re.IGNORECASE)
+    return {
+        'indian': int(indian_match.group(1)) if indian_match else 0,
+        'foreign': int(foreign_match.group(1)) if foreign_match else 0,
+    }
+
+MONUMENT_FEES = {name: get_monument_fees(name) for name in MONUMENTS_DATA}
+
+def get_paid_parking_for_booking(booking):
+    """Return only the paid parking reservation explicitly linked in this user's session."""
+    reservation_id = (session.get('parking_reservations') or {}).get(str(booking.id))
+    if not reservation_id:
+        return None
+    return ParkingReservation.query.filter_by(
+        id=reservation_id,
+        user_id=booking.user_id,
+        monument=booking.monument,
+        reservation_date=booking.visit_date,
+        payment_status='completed'
+    ).first()
+
 @app.route('/')
 def index():
     return redirect(url_for('auth'))
@@ -639,7 +666,8 @@ def booking():
         
         return redirect(url_for('payment'))
     
-    return render_template('booking.html', monuments_data=MONUMENTS_DATA)
+    return render_template('booking.html', monuments_data=MONUMENTS_DATA,
+                           monument_fees=MONUMENT_FEES)
 
 @app.route('/get_available_slots')
 def available_slots():
@@ -827,24 +855,40 @@ def process_payment():
                 'error': 'Invalid date format'
             })
 
+        # Recalculate the amount from the stored visitor category before recording payment.
+        stored_booking = session.get('booking_data') or {}
+        nationality = str(stored_booking.get('nationality') or booking_data.get('nationality', 'indian')).lower()
+        if nationality not in ('indian', 'foreign'):
+            nationality = 'indian'
+        monument = stored_booking.get('monument') or booking_data.get('monument', '')
+        booking_data['monument'] = monument
+        booking_data['nationality'] = nationality
+        per_visitor_fee = MONUMENT_FEES.get(monument, {}).get(nationality, 0)
+        visitor_count = max(1, int(stored_booking.get('num_visitors', booking_data.get('num_visitors', 0)) or 0) + 1)
+        base_amount = per_visitor_fee * visitor_count
+        is_student = bool(stored_booking.get('is_student', booking_data.get('is_student'))) or payment_data.get('is_student') == 'true'
+        need_guide = bool(stored_booking.get('need_guide', booking_data.get('need_guide')))
+        guide_fee = 300 if need_guide else 0
+        final_amount = base_amount - (per_visitor_fee * 0.3 if is_student else 0) + guide_fee
+
         # Create booking record
         booking = Booking(
             user_id=user.id,
-            monument=booking_data['monument'],
+            monument=monument,
             visit_date=visit_date,
             time_slot=time_slot,
             visitors=json.dumps(booking_data.get('visitors', [])),
-            need_guide=booking_data.get('need_guide', False),
+            need_guide=need_guide,
             need_parking=booking_data.get('need_parking', False),
-            base_amount=float(booking_data.get('base_amount', 0)),
-            final_amount=float(booking_data.get('final_amount', 0)),
+            base_amount=float(base_amount),
+            final_amount=float(final_amount),
             payment_status='completed',
             payment_method=payment_method,
             id_number=id_number,
             camera_required=camera_required,
             is_student=is_student,
             student_discount_applied=booking_data.get('student_discount_applied', False),
-            nationality='Indian'  # Set default nationality
+            nationality='Indian' if nationality == 'indian' else 'Foreign'
         )
 
         # Add booking to database
@@ -925,10 +969,14 @@ def booking_confirmation():
         'name': booking.user.name,
         'email': booking.user.email
     }
+
+    # Attach parking only when this session links it to the current monument booking.
+    parking_reservation = get_paid_parking_for_booking(booking)
     
     return render_template('booking_confirmation.html',
                          booking=booking_dict,
-                         qr_code=qr_code_url)
+                         qr_code=qr_code_url,
+                         parking_reservation=parking_reservation)
 
 @app.route('/scan/<int:booking_id>')
 def scan_result(booking_id):
@@ -982,7 +1030,16 @@ def get_parking_slots_route():
 
 @app.route('/parking', methods=['GET'])
 def parking():
-    return render_template('parking.html')
+    # Keep the originating booking in session when parking starts from its confirmation.
+    booking_id = request.args.get('booking_id', type=int)
+    linked_booking = get_booking_by_id(booking_id) if booking_id else None
+    if linked_booking and linked_booking.user_id == session.get('user_id'):
+        session['parking_booking_id'] = linked_booking.id
+        return render_template('parking.html',
+                               selected_monument=linked_booking.monument,
+                               selected_date=linked_booking.visit_date.strftime('%Y-%m-%d'))
+    session.pop('parking_booking_id', None)
+    return render_template('parking.html', selected_monument='', selected_date='')
 
 @app.route('/process_parking', methods=['POST'])
 def process_parking():
@@ -1028,6 +1085,26 @@ def payment_page():
     if 'user_id' not in session:
         flash('Please login to continue')
         return redirect(url_for('login'))
+
+    # Render parking checkout with the reservation details collected on the previous page.
+    if request.args.get('type') == 'parking':
+        parking_data = session.get('parking_details')
+        if not parking_data:
+            flash('No parking details found. Please select a parking slot first.')
+            return redirect(url_for('parking'))
+        parking_booking = {
+            'monument': parking_data['monument'],
+            'date': parking_data['reservation_date'],
+            'vehicle_type': parking_data['vehicle_type'],
+            'vehicle_number': parking_data['vehicle_number'],
+            'driver_name': parking_data['driver_name'],
+            'phone': parking_data['phone'],
+            'slot_number': parking_data['slot_id'],
+            'duration': parking_data['duration'],
+            'amount': parking_data['amount'],
+            'hourly_rate': parking_data['hourly_rate']
+        }
+        return render_template('parking_payment.html', booking=parking_booking)
 
     booking_data = session.get('booking_data')
     if not booking_data:
@@ -1211,6 +1288,22 @@ def monument_details(monument_name):
         return redirect(url_for('home'))
     
     monument = MONUMENTS_DATA[monument_name]
+    image_files = {
+        'Red Fort': 'Red fort.jpeg',
+        'Qutub Minar': 'Qutub minar.jpeg',
+        'India Gate': 'India gate.jpeg',
+        'Taj Mahal': 'Taj Mahal.jpeg',
+        'Lotus Temple': 'Lotus temple.jpeg',
+        'Jama Masjid': 'Jama masjid.jpeg',
+        'Purana Qila': 'Purana Qila (Old Fort).jpeg',
+        'National War Memorial': 'National War Memorial.jpeg',
+        'Rashtrapati Bhavan': 'Rastrapati bhavan.jpeg',
+        'Raj Ghat': 'Raj ghat.jpeg',
+        'Jantar Mantar': 'Jantar mantar.jpeg',
+        'Akshardham Temple': 'Akshardham temple.jpeg',
+        'Lodi Gardens': 'Lodi Gardens.jpeg',
+    }
+    monument = {**monument, 'image_url': url_for('static', filename='images/' + image_files[monument_name])}
     return render_template('monument_details.html', monument=monument)
 
 @app.route('/text-to-speech', methods=['POST'])
@@ -1324,9 +1417,20 @@ def process_parking_payment():
             db.session.add(reservation)
             db.session.commit()
             
-            # Store reservation ID in session for confirmation page
-            session['parking_reservation_id'] = reservation.id
+            # Link paid parking to this booking so earlier reservations cannot mark it paid.
+            booking_id = session.get('parking_booking_id') or session.get('booking_id')
+            linked_booking = get_booking_by_id(booking_id) if booking_id else None
+            if linked_booking and linked_booking.user_id == session['user_id'] and linked_booking.monument == reservation.monument and linked_booking.visit_date == reservation.reservation_date:
+                parking_reservations = dict(session.get('parking_reservations') or {})
+                parking_reservations[str(linked_booking.id)] = reservation.id
+                session['parking_reservations'] = parking_reservations
+                session['parking_reservation_id'] = reservation.id
+                return jsonify({
+                    'success': True,
+                    'redirect_url': url_for('booking_confirmation')
+                })
             
+            session['parking_reservation_id'] = reservation.id
             return jsonify({
                 'success': True,
                 'redirect_url': url_for('parking_confirmation')
@@ -1378,6 +1482,92 @@ def internal_error(error):
     db.session.rollback()  # Roll back db session in case of errors
     return render_template('500.html'), 500
 
+@app.route('/favicon.ico')
+def favicon():
+    # Redirect conventional favicon requests to the project's SVG icon.
+    return redirect(url_for('static', filename='favicon.svg'))
+
+# ─── Issue #3: Booking History ───────────────────────────────────────────────
+@app.route('/my-bookings')
+def my_bookings():
+    if 'user_id' not in session:
+        flash('Please login to view your bookings')
+        return redirect(url_for('auth'))
+    user_id = session['user_id']
+    bookings = Booking.query.filter_by(user_id=user_id).order_by(Booking.created_at.desc()).all()
+    today = datetime.now().date()
+    booking_list = []
+    for b in bookings:
+        d = b.to_dict()
+        d['status'] = 'upcoming' if b.visit_date >= today else 'past'
+        booking_list.append(d)
+    return render_template('my_bookings.html', bookings=booking_list, today=str(today))
+
+# ─── Issue #4: Booking Cancellation ──────────────────────────────────────────
+@app.route('/cancel-booking/<int:booking_id>', methods=['POST'])
+def cancel_booking(booking_id):
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'error': 'Not logged in'})
+    booking = get_booking_by_id(booking_id)
+    if not booking:
+        return jsonify({'success': False, 'error': 'Booking not found'})
+    if booking.user_id != session['user_id']:
+        return jsonify({'success': False, 'error': 'Unauthorized'})
+    today = datetime.now().date()
+    if booking.visit_date < today:
+        return jsonify({'success': False, 'error': 'Cannot cancel past bookings'})
+    if booking.payment_status == 'cancelled':
+        return jsonify({'success': False, 'error': 'Booking already cancelled'})
+    try:
+        booking.payment_status = 'cancelled'
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Booking cancelled successfully'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)})
+
+# ─── Issue #6: Download Ticket (printable HTML page) ─────────────────────────
+@app.route('/download-ticket/<int:booking_id>')
+def download_ticket(booking_id):
+    if 'user_id' not in session:
+        flash('Please login to download your ticket')
+        return redirect(url_for('auth'))
+    booking = get_booking_by_id(booking_id)
+    if not booking:
+        flash('Booking not found')
+        return redirect(url_for('my_bookings'))
+    if booking.user_id != session['user_id']:
+        flash('Unauthorized')
+        return redirect(url_for('my_bookings'))
+    qr_code_url = f"data:image/png;base64,{booking.qr_code}" if booking.qr_code else None
+    booking_dict = booking.to_dict()
+    booking_dict['user'] = {'name': booking.user.name, 'email': booking.user.email}
+    # Include only parking tied to this exact booking in the combined ticket.
+    parking_reservation = get_paid_parking_for_booking(booking)
+    parking_qr_code_url = (
+        f"data:image/png;base64,{parking_reservation.qr_code}"
+        if parking_reservation and parking_reservation.qr_code else None
+    )
+    return render_template('ticket.html', booking=booking_dict, qr_code=qr_code_url,
+                           parking_reservation=parking_reservation,
+                           parking_qr_code=parking_qr_code_url)
+
+# ─── Issue #7: Visitor Count API ─────────────────────────────────────────────
+@app.route('/api/visitor-counts')
+def visitor_counts():
+    """Return total confirmed visitor counts per monument"""
+    try:
+        results = db.session.query(
+            Booking.monument,
+            db.func.count(Booking.id).label('booking_count')
+        ).filter(
+            Booking.payment_status == 'completed'
+        ).group_by(Booking.monument).all()
+        counts = {row.monument: row.booking_count for row in results}
+        return jsonify(counts)
+    except Exception as e:
+        return jsonify({})
+
 @app.route('/store_booking', methods=['POST'])
 def store_booking():
     if 'user_id' not in session:
@@ -1395,7 +1585,7 @@ def store_booking():
             })
 
         # Validate required fields
-        required_fields = ['monument', 'date', 'time_slot', 'id_number']
+        required_fields = ['monument', 'date', 'time_slot', 'id_number', 'nationality']
         missing_fields = [field for field in required_fields if not booking_data.get(field)]
         if missing_fields:
             return jsonify({
@@ -1403,22 +1593,40 @@ def store_booking():
                 'error': f'Missing required fields: {", ".join(missing_fields)}'
             })
 
-        # Store booking data in session
+        # Validate nationality and calculate the entry total from server-side fee data.
+        nationality = str(booking_data.get('nationality', '')).lower()
+        if nationality not in ('indian', 'foreign'):
+            return jsonify({'success': False, 'error': 'Select a valid visitor category'})
+        monument = booking_data['monument']
+        if monument not in MONUMENTS_DATA:
+            return jsonify({'success': False, 'error': 'Select a valid monument'})
+        try:
+            num_visitors = max(0, min(10, int(booking_data.get('num_visitors', 0) or 0)))
+        except (TypeError, ValueError):
+            return jsonify({'success': False, 'error': 'Invalid visitor count'})
+        per_visitor_fee = MONUMENT_FEES[monument][nationality]
+        is_student = bool(booking_data.get('is_student', False))
+        need_guide = bool(booking_data.get('need_guide', False))
+        base_amount = per_visitor_fee * (num_visitors + 1)
+        final_amount = base_amount - (per_visitor_fee * 0.3 if is_student else 0) + (300 if need_guide else 0)
+
+        # Store server-calculated pricing with the selected visitor category.
         session['booking_data'] = {
-            'monument': booking_data['monument'],
+            'monument': monument,
             'date': booking_data['date'],
             'time_slot': booking_data['time_slot'],
-            'num_visitors': booking_data.get('num_visitors', 0),
-            'need_guide': booking_data.get('need_guide', False),
+            'num_visitors': num_visitors,
+            'need_guide': need_guide,
             'need_parking': booking_data.get('need_parking', False),
-            'is_student': booking_data.get('is_student', False),
+            'is_student': is_student,
+            'nationality': nationality,
             'id_number': booking_data['id_number'],
             'camera_required': booking_data.get('camera_required', False),
             'name': booking_data.get('name'),
             'email': booking_data.get('email'),
             'age': booking_data.get('age'),
-            'base_amount': booking_data.get('base_amount', 799),
-            'final_amount': booking_data.get('final_amount', 799)
+            'base_amount': base_amount,
+            'final_amount': final_amount
         }
 
         return jsonify({

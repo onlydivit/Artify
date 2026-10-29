@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - Artify</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #9b513c 0%, #6a3028 100%); min-height: 100vh; color: white; }
+        .navbar { background: rgba(255,255,255,0.1); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; }
+        .navbar h1 { font-size: 1.6rem; font-weight: 800; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 1.5rem; font-weight: 500; opacity: 0.9; transition: opacity 0.2s; }
+        .nav-links a:hover { opacity: 1; }
+        .main-content { max-width: 900px; margin: 2.5rem auto; padding: 0 1.5rem; }
+        .page-header { margin-bottom: 2rem; }
+        .page-header h2 { font-size: 2rem; font-weight: 700; margin-bottom: 0.4rem; }
+        .page-header p { opacity: 0.8; font-size: 1rem; }
+        .tabs { display: flex; margin-bottom: 2rem; border-radius: 10px; overflow: hidden; background: rgba(255,255,255,0.1); }
+        .tab-btn { flex: 1; padding: 0.9rem; border: none; background: transparent; color: white; font-size: 1rem; cursor: pointer; font-weight: 600; transition: background 0.2s; }
+        .tab-btn.active { background: rgba(255,255,255,0.25); }
+        .tab-btn:hover:not(.active) { background: rgba(255,255,255,0.12); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .booking-card { background: rgba(255,255,255,0.12); border-radius: 14px; padding: 1.5rem; margin-bottom: 1.2rem; backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.15); transition: transform 0.2s, box-shadow 0.2s; }
+        .booking-card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
+        .booking-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+        .monument-name { font-size: 1.3rem; font-weight: 700; }
+        .booking-id { opacity: 0.7; font-size: 0.85rem; margin-top: 0.2rem; }
+        .status-badge { padding: 0.3rem 0.85rem; border-radius: 20px; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+        .status-upcoming { background: rgba(76,175,80,0.25); color: #c1c99a; border: 1px solid rgba(76,175,80,0.4); }
+        .status-past { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.15); }
+        .status-cancelled { background: rgba(244,67,54,0.2); color: #ef9a9a; border: 1px solid rgba(244,67,54,0.35); }
+        .booking-details-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 0.75rem; margin-bottom: 1.2rem; }
+        .detail-pair { display: flex; flex-direction: column; }
+        .detail-pair .label { font-size: 0.78rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.2rem; }
+        .detail-pair .value { font-size: 0.97rem; font-weight: 600; }
+        .booking-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .action-btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.55rem 1.1rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; text-decoration: none; border: none; transition: all 0.2s; }
+        .btn-download { background: rgba(79,172,254,0.25); color: #d9bb83; border: 1px solid rgba(79,172,254,0.35); }
+        .btn-download:hover { background: rgba(79,172,254,0.4); color: white; }
+        .btn-cancel { background: rgba(244,67,54,0.2); color: #ef9a9a; border: 1px solid rgba(244,67,54,0.3); }
+        .btn-cancel:hover { background: rgba(244,67,54,0.35); color: white; }
+        .empty-state { text-align: center; padding: 4rem 2rem; opacity: 0.7; }
+        .empty-state i { font-size: 3rem; margin-bottom: 1rem; display: block; }
+        .empty-state p { font-size: 1.1rem; margin-bottom: 1.5rem; }
+        .empty-state a { display: inline-block; padding: 0.7rem 1.8rem; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: background 0.2s; }
+        .empty-state a:hover { background: rgba(255,255,255,0.3); }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-overlay.open { display: flex; }
+        .modal { background: #4a3028; border-radius: 16px; padding: 2rem; max-width: 420px; width: 90%; border: 1px solid rgba(255,255,255,0.2); text-align: center; }
+        .modal h3 { font-size: 1.4rem; margin-bottom: 0.8rem; }
+        .modal p { opacity: 0.8; margin-bottom: 1.5rem; }
+        .modal-actions { display: flex; gap: 1rem; justify-content: center; }
+        .modal-btn { padding: 0.7rem 1.6rem; border-radius: 8px; border: none; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .modal-btn-cancel { background: rgba(244,67,54,0.7); color: white; }
+        .modal-btn-cancel:hover { background: rgba(244,67,54,0.9); }
+        .modal-btn-back { background: rgba(255,255,255,0.15); color: white; }
+        .modal-btn-back:hover { background: rgba(255,255,255,0.25); }
+        .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 500; z-index: 2000; display: none; }
+        .flash-message { background: rgba(255,255,255,0.15); padding: 0.8rem 1rem; border-radius: 8px; margin-bottom: 1rem; }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/heritage-pattern.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <h1>Artify</h1>
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a>
+            <a href="{{ url_for('booking') }}"><i class="fas fa-ticket-alt"></i> Book Now</a>
+            <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </nav>
+    <div class="main-content">
+        {% with messages = get_flashed_messages() %}{% if messages %}{% for message in messages %}<div class="flash-message">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}
+        <div class="page-header">
+            <h2><i class="fas fa-history"></i> My Bookings</h2>
+            <p>View and manage your monument booking history</p>
+        </div>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('upcoming', this)"><i class="fas fa-calendar-check"></i> Upcoming</button>
+            <button class="tab-btn" onclick="switchTab('past', this)"><i class="fas fa-history"></i> Past</button>
+            <button class="tab-btn" onclick="switchTab('all', this)"><i class="fas fa-list"></i> All Bookings</button>
+        </div>
+
+        <div class="tab-content active" id="tab-upcoming">
+            {% set shown = namespace(count=0) %}
+            {% for b in bookings %}{% if b.status == 'upcoming' and b.payment_status != 'cancelled' %}{% set shown.count = shown.count + 1 %}
+            <div class="booking-card">
+                <div class="booking-header">
+                    <div><div class="monument-name">🏛️ {{ b.monument }}</div><div class="booking-id">Booking #{{ b.id }}</div></div>
+                    <span class="status-badge status-upcoming">Upcoming</span>
+                </div>
+                <div class="booking-details-grid">
+                    <div class="detail-pair"><span class="label">Visit Date</span><span class="value">📅 {{ b.visit_date }}</span></div>
+                    <div class="detail-pair"><span class="label">Time Slot</span><span class="value">🕐 {{ b.time_slot }}</span></div>
+                    <div class="detail-pair"><span class="label">Amount Paid</span><span class="value">💰 ₹{{ "%.2f"|format(b.final_amount) }}</span></div>
+                    <div class="detail-pair"><span class="label">Payment</span><span class="value">{{ b.payment_method or "—" }}</span></div>
+                    {% if b.need_guide %}<div class="detail-pair"><span class="label">Guide</span><span class="value">✅ Included</span></div>{% endif %}
+                    {% if b.is_student %}<div class="detail-pair"><span class="label">Discount</span><span class="value">🎓 Student 30% off</span></div>{% endif %}
+                </div>
+                <div class="booking-actions">
+                    <a href="{{ url_for('download_ticket', booking_id=b.id) }}" class="action-btn btn-download" target="_blank"><i class="fas fa-download"></i> Download Ticket</a>
+                    <button class="action-btn btn-cancel" onclick="openCancelModal({{ b.id }})"><i class="fas fa-times-circle"></i> Cancel Booking</button>
+                </div>
+            </div>
+            {% endif %}{% endfor %}
+            {% if shown.count == 0 %}<div class="empty-state"><i class="fas fa-calendar-times"></i><p>No upcoming bookings. Ready to explore a monument?</p><a href="{{ url_for('booking') }}">Book Now</a></div>{% endif %}
+        </div>
+
+        <div class="tab-content" id="tab-past">
+            {% set shown2 = namespace(count=0) %}
+            {% for b in bookings %}{% if b.status == 'past' %}{% set shown2.count = shown2.count + 1 %}
+            <div class="booking-card">
+                <div class="booking-header">
+                    <div><div class="monument-name">🏛️ {{ b.monument }}</div><div class="booking-id">Booking #{{ b.id }}</div></div>
+                    {% if b.payment_status == 'cancelled' %}<span class="status-badge status-cancelled">Cancelled</span>{% else %}<span class="status-badge status-past">Visited</span>{% endif %}
+                </div>
+                <div class="booking-details-grid">
+                    <div class="detail-pair"><span class="label">Visit Date</span><span class="value">📅 {{ b.visit_date }}</span></div>
+                    <div class="detail-pair"><span class="label">Time Slot</span><span class="value">🕐 {{ b.time_slot }}</span></div>
+                    <div class="detail-pair"><span class="label">Amount Paid</span><span class="value">💰 ₹{{ "%.2f"|format(b.final_amount) }}</span></div>
+                    <div class="detail-pair"><span class="label">Payment</span><span class="value">{{ b.payment_method or "—" }}</span></div>
+                </div>
+                <div class="booking-actions">
+                    {% if b.payment_status != 'cancelled' %}<a href="{{ url_for('download_ticket', booking_id=b.id) }}" class="action-btn btn-download" target="_blank"><i class="fas fa-download"></i> Download Ticket</a>{% endif %}
+                </div>
+            </div>
+            {% endif %}{% endfor %}
+            {% if shown2.count == 0 %}<div class="empty-state"><i class="fas fa-box-open"></i><p>No past bookings yet.</p></div>{% endif %}
+        </div>
+
+        <div class="tab-content" id="tab-all">
+            {% if bookings %}
+            {% for b in bookings %}
+            <div class="booking-card">
+                <div class="booking-header">
+                    <div><div class="monument-name">🏛️ {{ b.monument }}</div><div class="booking-id">Booking #{{ b.id }}</div></div>
+                    {% if b.payment_status == 'cancelled' %}<span class="status-badge status-cancelled">Cancelled</span>{% elif b.status == 'upcoming' %}<span class="status-badge status-upcoming">Upcoming</span>{% else %}<span class="status-badge status-past">Visited</span>{% endif %}
+                </div>
+                <div class="booking-details-grid">
+                    <div class="detail-pair"><span class="label">Visit Date</span><span class="value">📅 {{ b.visit_date }}</span></div>
+                    <div class="detail-pair"><span class="label">Time Slot</span><span class="value">🕐 {{ b.time_slot }}</span></div>
+                    <div class="detail-pair"><span class="label">Amount Paid</span><span class="value">💰 ₹{{ "%.2f"|format(b.final_amount) }}</span></div>
+                    <div class="detail-pair"><span class="label">Payment</span><span class="value">{{ b.payment_method or "—" }}</span></div>
+                    {% if b.need_guide %}<div class="detail-pair"><span class="label">Guide</span><span class="value">✅ Included</span></div>{% endif %}
+                    {% if b.is_student %}<div class="detail-pair"><span class="label">Discount</span><span class="value">🎓 Student 30% off</span></div>{% endif %}
+                </div>
+                <div class="booking-actions">
+                    {% if b.payment_status != 'cancelled' %}<a href="{{ url_for('download_ticket', booking_id=b.id) }}" class="action-btn btn-download" target="_blank"><i class="fas fa-download"></i> Download Ticket</a>{% endif %}
+                    {% if b.status == 'upcoming' and b.payment_status != 'cancelled' %}<button class="action-btn btn-cancel" onclick="openCancelModal({{ b.id }})"><i class="fas fa-times-circle"></i> Cancel Booking</button>{% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="empty-state"><i class="fas fa-ticket-alt"></i><p>You haven't made any bookings yet.</p><a href="{{ url_for('booking') }}">Make Your First Booking</a></div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="cancelModal">
+        <div class="modal">
+            <i class="fas fa-exclamation-triangle" style="font-size:2.5rem;color:#ef9a9a;margin-bottom:1rem;display:block;"></i>
+            <h3>Cancel Booking?</h3>
+            <p>Are you sure you want to cancel this booking? This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-back" onclick="closeModal()">Keep It</button>
+                <button class="modal-btn modal-btn-cancel" onclick="confirmCancel()">Yes, Cancel</button>
+            </div>
+        </div>
+    </div>
+    <div class="toast" id="toastMsg"></div>
+
+    <script>
+        let pendingCancelId = null;
+        function switchTab(tabName, btn) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+            btn.classList.add('active');
+        }
+        function openCancelModal(id) { pendingCancelId = id; document.getElementById('cancelModal').classList.add('open'); }
+        function closeModal() { document.getElementById('cancelModal').classList.remove('open'); pendingCancelId = null; }
+        function confirmCancel() {
+            if (!pendingCancelId) return;
+            fetch(`/cancel-booking/${pendingCancelId}`, { method: 'POST' })
+                .then(r => r.json())
+                .then(data => {
+                    closeModal();
+                    showToast(data.success ? '✅ Booking cancelled successfully.' : '❌ ' + (data.error || 'Failed.'));
+                    if (data.success) setTimeout(() => location.reload(), 1500);
+                })
+                .catch(() => { closeModal(); showToast('❌ Network error. Please try again.'); });
+        }
+        function showToast(msg) {
+            const t = document.getElementById('toastMsg'); t.textContent = msg; t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
+        }
+        document.getElementById('cancelModal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+    </script>
+</body>
+</html>

@@ -14,7 +14,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #9b513c 0%, #6a3028 100%);
             min-height: 100vh;
             color: white;
         }
@@ -132,7 +132,7 @@
         }
 
         .parking-slot.available {
-            border: 2px solid #4CAF50;
+            border: 2px solid #65794f;
         }
 
         .parking-slot.occupied {
@@ -142,7 +142,7 @@
         }
 
         .parking-slot.selected {
-            border: 2px solid #2196F3;
+            border: 2px solid #a45f3e;
             background: rgba(33, 150, 243, 0.2);
         }
 
@@ -193,7 +193,7 @@
         }
 
         .lang-select option {
-            background: #764ba2;
+            background: #6a3028;
             color: white;
         }
 
@@ -245,12 +245,12 @@
         }
 
         .parking-slot.available {
-            border-color: #4CAF50;
+            border-color: #65794f;
         }
 
         .parking-slot.selected {
             background: rgba(33, 150, 243, 0.3);
-            border-color: #2196F3;
+            border-color: #a45f3e;
             transform: scale(1.05);
         }
 
@@ -283,7 +283,7 @@
         .vehicle-type-label {
             font-size: 1.2rem;
             margin-bottom: 1rem;
-            color: #ffd700;
+            color: #d2a85b;
         }
 
         .form-group select {
@@ -311,21 +311,22 @@
 
         .form-group select:focus {
             outline: none;
-            border-color: #764ba2;
+            border-color: #6a3028;
             box-shadow: 0 0 0 2px rgba(118, 75, 162, 0.3);
             background-color: rgba(255, 255, 255, 0.15);
         }
 
         .form-group select option {
-            background: #764ba2;
+            background: #6a3028;
             color: white;
             padding: 0.8rem;
         }
 
         .form-group select option:hover {
-            background: #667eea;
+            background: #9b513c;
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/heritage-pattern.css') }}">
 </head>
 <body>
     <nav class="navbar">
@@ -365,25 +366,25 @@
                     <label for="monument" data-translate="select-monument">Select Monument</label>
                     <select id="monument" name="monument" required data-translate="monument-placeholder" autocomplete="off">
                         <option value="" data-translate="choose-monument">Choose a monument</option>
-                        <option value="Taj Mahal" data-translate="monument-taj">Taj Mahal</option>
-                        <option value="Red Fort" data-translate="monument-red-fort">Red Fort</option>
-                        <option value="Qutub Minar" data-translate="monument-qutub">Qutub Minar</option>
-                        <option value="India Gate" data-translate="monument-india-gate">India Gate</option>
-                        <option value="Lotus Temple" data-translate="monument-lotus">Lotus Temple</option>
-                        <option value="Jama Masjid" data-translate="monument-jama">Jama Masjid</option>
-                        <option value="Akshardham Temple" data-translate="monument-akshardham">Akshardham Temple</option>
-                        <option value="Raj Ghat" data-translate="monument-raj-ghat">Raj Ghat</option>
-                        <option value="Jantar Mantar" data-translate="monument-jantar">Jantar Mantar</option>
-                        <option value="Rashtrapati Bhavan" data-translate="monument-rashtrapati">Rashtrapati Bhavan</option>
-                        <option value="Purana Qila" data-translate="monument-purana">Purana Qila</option>
-                        <option value="National War Memorial" data-translate="monument-war-memorial">National War Memorial</option>
-                        <option value="Lodi Gardens" data-translate="monument-lodi">Lodi Gardens</option>
+                        <option value="Taj Mahal" data-translate="monument-taj" {% if selected_monument == 'Taj Mahal' %}selected{% endif %}>Taj Mahal</option>
+                        <option value="Red Fort" data-translate="monument-red-fort" {% if selected_monument == 'Red Fort' %}selected{% endif %}>Red Fort</option>
+                        <option value="Qutub Minar" data-translate="monument-qutub" {% if selected_monument == 'Qutub Minar' %}selected{% endif %}>Qutub Minar</option>
+                        <option value="India Gate" data-translate="monument-india-gate" {% if selected_monument == 'India Gate' %}selected{% endif %}>India Gate</option>
+                        <option value="Lotus Temple" data-translate="monument-lotus" {% if selected_monument == 'Lotus Temple' %}selected{% endif %}>Lotus Temple</option>
+                        <option value="Jama Masjid" data-translate="monument-jama" {% if selected_monument == 'Jama Masjid' %}selected{% endif %}>Jama Masjid</option>
+                        <option value="Akshardham Temple" data-translate="monument-akshardham" {% if selected_monument == 'Akshardham Temple' %}selected{% endif %}>Akshardham Temple</option>
+                        <option value="Raj Ghat" data-translate="monument-raj-ghat" {% if selected_monument == 'Raj Ghat' %}selected{% endif %}>Raj Ghat</option>
+                        <option value="Jantar Mantar" data-translate="monument-jantar" {% if selected_monument == 'Jantar Mantar' %}selected{% endif %}>Jantar Mantar</option>
+                        <option value="Rashtrapati Bhavan" data-translate="monument-rashtrapati" {% if selected_monument == 'Rashtrapati Bhavan' %}selected{% endif %}>Rashtrapati Bhavan</option>
+                        <option value="Purana Qila" data-translate="monument-purana" {% if selected_monument == 'Purana Qila' %}selected{% endif %}>Purana Qila</option>
+                        <option value="National War Memorial" data-translate="monument-war-memorial" {% if selected_monument == 'National War Memorial' %}selected{% endif %}>National War Memorial</option>
+                        <option value="Lodi Gardens" data-translate="monument-lodi" {% if selected_monument == 'Lodi Gardens' %}selected{% endif %}>Lodi Gardens</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label for="date" data-translate="select-date">Select Date</label>
-                    <input type="date" id="date" name="date" required autocomplete="off">
+                    <input type="date" id="date" name="date" value="{{ selected_date }}" required autocomplete="off">
                 </div>
 
                 <div class="form-group">
@@ -550,7 +551,7 @@
             const dateInput = document.getElementById('date');
             const today = new Date().toISOString().split('T')[0];
             dateInput.min = today;
-            dateInput.value = today;
+            if (!dateInput.value) dateInput.value = today;
 
             // Initialize vehicle type change handler
             const vehicleTypeSelect = document.getElementById('vehicle_type');

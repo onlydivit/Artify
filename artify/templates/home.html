@@ -13,15 +13,15 @@
         }
 
         :root {
-            --primary-color: #2c3e50;
-            --accent-color: #4facfe;
-            --gradient-1: linear-gradient(135deg, #4facfe, #00f2fe);
-            --gradient-2: linear-gradient(135deg, #2193b0, #6dd5ed);
-            --gradient-3: linear-gradient(135deg, #2193b0, #4facfe);
+            --primary-color: #46372c;
+            --accent-color: #a45f3e;
+            --gradient-1: linear-gradient(135deg, #a45f3e, #d3ad68);
+            --gradient-2: linear-gradient(135deg, #8b4735, #d8b978);
+            --gradient-3: linear-gradient(135deg, #8b4735, #a45f3e);
         }
 
         body {
-            background: #f8f9fa;
+            background: #f5efe3;
             min-height: 100vh;
             color: var(--primary-color);
             line-height: 1.6;
@@ -420,6 +420,26 @@
             transform: translateY(0);
         }
 
+        /* Issue #7: Visitor Count Badge */
+        .visitor-count-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.82rem;
+            color: #a45f3e;
+            background: rgba(79,172,254,0.1);
+            border: 1px solid rgba(79,172,254,0.25);
+            border-radius: 20px;
+            padding: 0.25rem 0.75rem;
+            margin: 0.5rem 0 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+        }
+        .visitor-count-badge .vc-num {
+            color: #46372c;
+            font-weight: 700;
+        }
+
         @media (max-width: 768px) {
             .navbar {
                 padding: 1rem;
@@ -492,6 +512,7 @@
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/heritage-pattern.css') }}">
 </head>
 <body>
     <nav class="navbar">
@@ -500,6 +521,7 @@
             <a href="{{ url_for('home') }}" data-translate="nav-home">Home</a>
             <a href="{{ url_for('booking') }}" data-translate="nav-book">Book Now</a>
             <a href="{{ url_for('parking') }}" data-translate="nav-parking">Parking</a>
+            <a href="{{ url_for('my_bookings') }}" style="color: var(--primary-color);">My Bookings</a>
             <select id="language" onchange="changeLanguage(this.value)" class="lang-select">
                 <option value="en">Lang: EN</option>
                 <option value="hi">हिंदी</option>
@@ -525,9 +547,28 @@
             <p data-translate="welcome-subtitle">Discover the rich heritage of Delhi through its magnificent monuments. Each monument tells a unique story of India's glorious past.</p>
         </section>
 
-        <div class="monuments-grid">
-            <!-- First 6 monuments visible by default -->
-            <div class="monument-card">
+        <!-- Issue #2: Search Monument -->
+        <div class="search-container" style="margin-bottom:2rem;">
+            <div style="position:relative;max-width:600px;margin:0 auto;">
+                <input
+                    type="text"
+                    id="monumentSearch"
+                    placeholder="🔍  Search monuments by name..."
+                    oninput="filterMonuments()"
+                    style="width:100%;padding:1rem 1.5rem;font-size:1.1rem;border-radius:50px;border:2px solid rgba(79,172,254,0.3);outline:none;background:white;box-shadow:0 4px 20px rgba(79,172,254,0.15);transition:all 0.3s;font-family:inherit;"
+                    onfocus="this.style.borderColor='#a45f3e';this.style.boxShadow='0 4px 25px rgba(79,172,254,0.35)';"
+                    onblur="this.style.borderColor='rgba(79,172,254,0.3)';this.style.boxShadow='0 4px 20px rgba(79,172,254,0.15)';"
+                >
+                <div id="noResults" style="display:none;text-align:center;padding:2rem;color:#888;font-size:1.1rem;">
+                    😔 No monuments match your search.
+                </div>
+            </div>
+        </div>
+
+        <!-- All monuments in a single unified searchable grid (Issue #2, #7) -->
+        <div class="monuments-grid" id="allMonumentsGrid">
+
+            <div class="monument-card" data-monument="Red Fort Lal Qila">
                 <div class="monument-image">
                     <img src="{{ url_for('static', filename='images/Red fort.jpeg') }}" alt="Red Fort">
                 </div>
@@ -535,6 +576,7 @@
                     <h3 data-translate="monument-red-fort">Red Fort (Lal Qila)</h3>
                     <span class="status" data-translate="unesco-label">UNESCO World Heritage Site</span>
                     <p data-translate="monument-red-fort-desc">A historic fort built by Mughal Emperor Shah Jahan, symbolizing the grandeur of the Mughal Empire.</p>
+                    <div class="visitor-count-badge" data-monument-key="Red Fort">👥 <span class="vc-num">—</span> visitors booked</div>
                     <div class="card-buttons">
                         <a href="{{ url_for('monument_details', monument_name='Red Fort') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
                         <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
@@ -542,7 +584,7 @@
                 </div>
             </div>
 
-            <div class="monument-card">
+            <div class="monument-card" data-monument="Qutub Minar">
                 <div class="monument-image">
                     <img src="{{ url_for('static', filename='images/Qutub minar.jpeg') }}" alt="Qutub Minar">
                 </div>
@@ -550,6 +592,7 @@
                     <h3 data-translate="monument-qutub">Qutub Minar</h3>
                     <span class="status" data-translate="unesco-label">UNESCO World Heritage Site</span>
                     <p data-translate="monument-qutub-desc">The tallest brick minaret in the world, showcasing Indo-Islamic architecture.</p>
+                    <div class="visitor-count-badge" data-monument-key="Qutub Minar">👥 <span class="vc-num">—</span> visitors booked</div>
                     <div class="card-buttons">
                         <a href="{{ url_for('monument_details', monument_name='Qutub Minar') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
                         <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
@@ -557,13 +600,14 @@
                 </div>
             </div>
 
-            <div class="monument-card">
+            <div class="monument-card" data-monument="India Gate">
                 <div class="monument-image">
                     <img src="{{ url_for('static', filename='images/India gate.jpeg') }}" alt="India Gate">
                 </div>
                 <div class="monument-info">
                     <h3 data-translate="monument-india-gate">India Gate</h3>
                     <p data-translate="monument-india-gate-desc">A war memorial dedicated to the soldiers of the British Indian Army who died in World War I.</p>
+                    <div class="visitor-count-badge" data-monument-key="India Gate">👥 <span class="vc-num">—</span> visitors booked</div>
                     <div class="card-buttons">
                         <a href="{{ url_for('monument_details', monument_name='India Gate') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
                         <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
@@ -571,7 +615,7 @@
                 </div>
             </div>
 
-            <div class="monument-card">
+            <div class="monument-card" data-monument="Taj Mahal">
                 <div class="monument-image">
                     <img src="{{ url_for('static', filename='images/Taj Mahal.jpeg') }}" alt="Taj Mahal">
                 </div>
@@ -579,6 +623,7 @@
                     <h3 data-translate="monument-taj">Taj Mahal</h3>
                     <span class="status" data-translate="unesco-label">UNESCO World Heritage Site</span>
                     <p data-translate="monument-taj-desc">One of the Seven Wonders of the World, a symbol of eternal love.</p>
+                    <div class="visitor-count-badge" data-monument-key="Taj Mahal">👥 <span class="vc-num">—</span> visitors booked</div>
                     <div class="card-buttons">
                         <a href="{{ url_for('monument_details', monument_name='Taj Mahal') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
                         <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
@@ -586,13 +631,14 @@
                 </div>
             </div>
 
-            <div class="monument-card">
+            <div class="monument-card" data-monument="Lotus Temple">
                 <div class="monument-image">
                     <img src="{{ url_for('static', filename='images/Lotus temple.jpeg') }}" alt="Lotus Temple">
                 </div>
                 <div class="monument-info">
                     <h3 data-translate="monument-lotus">Lotus Temple</h3>
                     <p data-translate="monument-lotus-desc">Known for its flowerlike shape, it is a Bahá'í House of Worship.</p>
+                    <div class="visitor-count-badge" data-monument-key="Lotus Temple">👥 <span class="vc-num">—</span> visitors booked</div>
                     <div class="card-buttons">
                         <a href="{{ url_for('monument_details', monument_name='Lotus Temple') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
                         <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
@@ -600,34 +646,29 @@
                 </div>
             </div>
 
-            <div class="monument-card">
+            <div class="monument-card" data-monument="Jama Masjid">
                 <div class="monument-image">
                     <img src="{{ url_for('static', filename='images/Jama masjid.jpeg') }}" alt="Jama Masjid">
                 </div>
                 <div class="monument-info">
                     <h3 data-translate="monument-jama">Jama Masjid</h3>
                     <p data-translate="monument-jama-desc">One of the largest mosques in India, built by Shah Jahan.</p>
+                    <div class="visitor-count-badge" data-monument-key="Jama Masjid">👥 <span class="vc-num">—</span> visitors booked</div>
                     <div class="card-buttons">
                         <a href="{{ url_for('monument_details', monument_name='Jama Masjid') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
                         <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="button-container" id="topButtonContainer">
-            <button class="see-more-btn" onclick="toggleMonuments()" id="seeMoreBtn" data-translate="see-more-btn">See More Monuments</button>
-        </div>
-
-        <div class="monuments-grid" id="hiddenMonumentsGrid">
-            <!-- Hidden monuments -->
-            <div class="monument-card hidden">
+            <div class="monument-card" data-monument="Purana Qila Old Fort">
                 <div class="monument-image">
                     <img src="{{ url_for('static', filename='images/Purana qila (Old Fort).jpeg') }}" alt="Purana Qila">
                 </div>
                 <div class="monument-info">
                     <h3 data-translate="monument-purana">Purana Qila (Old Fort)</h3>
                     <p data-translate="monument-purana-desc">Believed to be the site of Indraprastha, the ancient city of the Mahabharata.</p>
+                    <div class="visitor-count-badge" data-monument-key="Purana Qila">👥 <span class="vc-num">—</span> visitors booked</div>
                     <div class="card-buttons">
                         <a href="{{ url_for('monument_details', monument_name='Purana Qila') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
                         <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
@@ -635,13 +676,14 @@
                 </div>
             </div>
 
-            <div class="monument-card hidden">
+            <div class="monument-card" data-monument="Lodi Gardens">
                 <div class="monument-image">
                     <img src="{{ url_for('static', filename='images/Lodi Gardens.jpeg') }}" alt="Lodi Gardens">
                 </div>
                 <div class="monument-info">
                     <h3 data-translate="monument-lodi">Lodi Gardens</h3>
                     <p data-translate="monument-lodi-desc">A city park containing tombs of the Sayyid and Lodi dynasties.</p>
+                    <div class="visitor-count-badge" data-monument-key="Lodi Gardens">👥 <span class="vc-num">—</span> visitors booked</div>
                     <div class="card-buttons">
                         <a href="{{ url_for('monument_details', monument_name='Lodi Gardens') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
                         <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
@@ -649,13 +691,14 @@
                 </div>
             </div>
 
-            <div class="monument-card hidden">
+            <div class="monument-card" data-monument="Rashtrapati Bhavan">
                 <div class="monument-image">
                     <img src="{{ url_for('static', filename='images/Rastrapati bhavan.jpeg') }}" alt="Rashtrapati Bhavan">
                 </div>
                 <div class="monument-info">
                     <h3 data-translate="monument-rashtrapati">Rashtrapati Bhavan</h3>
                     <p data-translate="monument-rashtrapati-desc">The official residence of the President of India, with beautiful Mughal gardens.</p>
+                    <div class="visitor-count-badge" data-monument-key="Rashtrapati Bhavan">👥 <span class="vc-num">—</span> visitors booked</div>
                     <div class="card-buttons">
                         <a href="{{ url_for('monument_details', monument_name='Rashtrapati Bhavan') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
                         <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
@@ -663,13 +706,14 @@
                 </div>
             </div>
 
-            <div class="monument-card hidden">
+            <div class="monument-card" data-monument="Raj Ghat Gandhi">
                 <div class="monument-image">
                     <img src="{{ url_for('static', filename='images/Raj ghat.jpeg') }}" alt="Raj Ghat">
                 </div>
                 <div class="monument-info">
                     <h3 data-translate="monument-raj-ghat">Raj Ghat</h3>
                     <p data-translate="monument-raj-ghat-desc">A memorial dedicated to Mahatma Gandhi, marking the spot of his cremation.</p>
+                    <div class="visitor-count-badge" data-monument-key="Raj Ghat">👥 <span class="vc-num">—</span> visitors booked</div>
                     <div class="card-buttons">
                         <a href="{{ url_for('monument_details', monument_name='Raj Ghat') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
                         <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
@@ -677,13 +721,14 @@
                 </div>
             </div>
 
-            <div class="monument-card hidden">
+            <div class="monument-card" data-monument="Jantar Mantar Observatory">
                 <div class="monument-image">
                     <img src="{{ url_for('static', filename='images/Jantar mantar.jpeg') }}" alt="Jantar Mantar">
                 </div>
                 <div class="monument-info">
                     <h3 data-translate="monument-jantar">Jantar Mantar</h3>
                     <p data-translate="monument-jantar-desc">An astronomical observatory built by Maharaja Jai Singh II of Jaipur.</p>
+                    <div class="visitor-count-badge" data-monument-key="Jantar Mantar">👥 <span class="vc-num">—</span> visitors booked</div>
                     <div class="card-buttons">
                         <a href="{{ url_for('monument_details', monument_name='Jantar Mantar') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
                         <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
@@ -691,23 +736,24 @@
                 </div>
             </div>
 
-            <div class="monument-card hidden">
+            <div class="monument-card" data-monument="Akshardham Temple Hindu">
                 <div class="monument-image">
                     <img src="{{ url_for('static', filename='images/Akshardham temple.jpeg') }}" alt="Akshardham Temple">
                 </div>
                 <div class="monument-info">
                     <h3 data-translate="monument-akshardham">Akshardham Temple</h3>
                     <p data-translate="monument-akshardham-desc">A large Hindu temple complex known for its stunning architecture and exhibitions.</p>
+                    <div class="visitor-count-badge" data-monument-key="Akshardham Temple">👥 <span class="vc-num">—</span> visitors booked</div>
                     <div class="card-buttons">
                         <a href="{{ url_for('monument_details', monument_name='Akshardham Temple') }}" class="card-btn primary" data-translate="see-more-details">See More</a>
                         <a href="{{ url_for('booking') }}" class="card-btn secondary" data-translate="book-now">Book Now</a>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="button-container" id="bottomButtonContainer" style="display: none;">
-            <button class="see-more-btn" onclick="toggleMonuments()" id="showLessBtn" data-translate="show-less-btn">Show Less</button>
+        </div>
+        <div id="noMonumentsFound" style="display:none;text-align:center;padding:3rem;color:#888;font-size:1.2rem;">
+            😔 No monuments match your search.
         </div>
     </div>
 
@@ -1108,6 +1154,40 @@
             alert('Speech recognition is not supported in your browser.');
             micButton.style.display = 'none';
         }
+        // ─── Issue #2: Search/Filter Monuments ────────────────────────────────
+        function filterMonuments() {
+            const query = document.getElementById('monumentSearch').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('#allMonumentsGrid .monument-card');
+            let anyVisible = false;
+            cards.forEach(card => {
+                const monAttr = (card.getAttribute('data-monument') || '').toLowerCase();
+                const nameEl = card.querySelector('h3');
+                const name = nameEl ? nameEl.textContent.toLowerCase() : '';
+                const matches = !query || monAttr.includes(query) || name.includes(query);
+                card.style.display = matches ? '' : 'none';
+                if (matches) anyVisible = true;
+            });
+            const noFound = document.getElementById('noMonumentsFound');
+            if (noFound) noFound.style.display = anyVisible ? 'none' : 'block';
+        }
+
+        // ─── Issue #7: Visitor Count Display ─────────────────────────────────
+        function loadVisitorCounts() {
+            fetch('/api/visitor-counts')
+                .then(r => r.json())
+                .then(data => {
+                    document.querySelectorAll('.visitor-count-badge').forEach(badge => {
+                        const key = badge.getAttribute('data-monument-key');
+                        const count = data[key] !== undefined ? data[key] : 0;
+                        const span = badge.querySelector('.vc-num');
+                        if (span) span.textContent = count.toLocaleString();
+                    });
+                })
+                .catch(() => {
+                    document.querySelectorAll('.vc-num').forEach(el => el.textContent = '0');
+                });
+        }
+        document.addEventListener('DOMContentLoaded', loadVisitorCounts);
     </script>
 </body>
 </html> 

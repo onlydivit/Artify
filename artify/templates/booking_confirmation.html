@@ -13,7 +13,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #9b513c 0%, #6a3028 100%);
             min-height: 100vh;
             color: white;
         }
@@ -61,7 +61,7 @@
             font-size: 1.5rem;
             margin-bottom: 2rem;
             padding: 1rem;
-            background: #4CAF50;
+            background: #65794f;
             border-radius: 5px;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -77,7 +77,7 @@
 
         .booking-details h2 {
             margin-bottom: 1rem;
-            color: #ffd700;
+            color: #d2a85b;
         }
 
         .detail-item {
@@ -107,7 +107,7 @@
 
         .qr-section h3 {
             margin-bottom: 1rem;
-            color: #ffd700;
+            color: #d2a85b;
         }
 
         .qr-code {
@@ -136,7 +136,7 @@
             display: inline-block;
             margin-top: 1rem;
             padding: 0.8rem 1.5rem;
-            background: #4CAF50;
+            background: #65794f;
             color: white;
             text-decoration: none;
             border-radius: 5px;
@@ -144,7 +144,7 @@
         }
 
         .download-button:hover {
-            background: #45a049;
+            background: #526842;
         }
 
         .visitors-list {
@@ -176,7 +176,7 @@
         }
 
         .parking-section h3 {
-            color: #ffd700;
+            color: #d2a85b;
             margin-bottom: 1rem;
         }
 
@@ -184,7 +184,7 @@
             display: inline-block;
             margin-top: 1rem;
             padding: 0.8rem 1.5rem;
-            background: #2196F3;
+            background: #a45f3e;
             color: white;
             text-decoration: none;
             border-radius: 5px;
@@ -192,7 +192,7 @@
         }
 
         .parking-button:hover {
-            background: #1976D2;
+            background: #82402f;
         }
 
         .error-message {
@@ -201,12 +201,14 @@
             margin-top: 1rem;
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/heritage-pattern.css') }}">
 </head>
 <body>
     <nav class="navbar">
         <h1>Artify</h1>
         <div class="nav-links">
             <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('my_bookings') }}">My Bookings</a>
             <a href="{{ url_for('booking') }}">Book Now</a>
             <a href="{{ url_for('logout') }}">Logout</a>
         </div>
@@ -289,9 +291,14 @@
                     <p>Please show this QR code at the monument entrance for verification.</p>
                     <p>You can download or take a screenshot of this QR code for offline access.</p>
                 </div>
-                <a href="{{ qr_code }}" download="booking_qr.png" class="download-button">
-                    Download QR Code
-                </a>
+                <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:1rem;">
+                    <a href="{{ qr_code }}" download="booking_qr.png" class="download-button">
+                        Download QR Code
+                    </a>
+                    <a href="{{ url_for('download_ticket', booking_id=booking.id) }}" class="download-button" style="background:#a45f3e;" target="_blank">
+                        🎫 Download Full Ticket
+                    </a>
+                </div>
                 {% else %}
                 <div class="error-message">
                     <p>QR code generation failed. Please contact support.</p>
@@ -302,13 +309,24 @@
             {% if booking.need_parking %}
             <div class="parking-section">
                 <h3>Parking Reservation</h3>
+                <!-- Replace the parking prompt with paid reservation details after checkout. -->
+                {% if parking_reservation %}
+                <div class="instructions">
+                    <p>Parking payment is complete. Your reservation is included in the full ticket.</p>
+                    <p>Slot {{ parking_reservation.slot_id }} · {{ parking_reservation.vehicle_type | title }} · {{ parking_reservation.vehicle_number }} · {{ parking_reservation.duration }} hours · ₹{{ "%.2f"|format(parking_reservation.amount) }} paid</p>
+                </div>
+                <a href="{{ url_for('download_ticket', booking_id=booking.id) }}" class="parking-button" target="_blank">
+                    Download Updated Ticket
+                </a>
+                {% else %}
                 <div class="instructions">
                     <p>You've requested parking for your visit. Please proceed to book your parking slot.</p>
                     <p>Note: Parking fees are separate from monument entry fees.</p>
                 </div>
-                <a href="{{ url_for('parking', monument=booking.monument, date=booking.date) }}" class="parking-button">
+                <a href="{{ url_for('parking', booking_id=booking.id) }}" class="parking-button">
                     Book Parking Now
                 </a>
+                {% endif %}
             </div>
             {% endif %}
         </div>
