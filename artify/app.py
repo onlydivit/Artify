@@ -478,6 +478,19 @@ def get_monument_fees(monument_name):
 
 MONUMENT_FEES = {name: get_monument_fees(name) for name in MONUMENTS_DATA}
 
+def get_paid_parking_for_booking(booking):
+    """Return only the paid parking reservation explicitly linked in this user's session."""
+    reservation_id = (session.get('parking_reservations') or {}).get(str(booking.id))
+    if not reservation_id:
+        return None
+    return ParkingReservation.query.filter_by(
+        id=reservation_id,
+        user_id=booking.user_id,
+        monument=booking.monument,
+        reservation_date=booking.visit_date,
+        payment_status='completed'
+    ).first()
+
 @app.route('/')
 def index():
     return redirect(url_for('auth'))
@@ -957,13 +970,8 @@ def booking_confirmation():
         'email': booking.user.email
     }
 
-    # Attach a completed parking reservation to the monument booking confirmation.
-    parking_reservation = ParkingReservation.query.filter_by(
-        user_id=booking.user_id,
-        monument=booking.monument,
-        reservation_date=booking.visit_date,
-        payment_status='completed'
-    ).order_by(ParkingReservation.created_at.desc()).first()
+    # Attach parking only when this session links it to the current monument booking.
+    parking_reservation = get_paid_parking_for_booking(booking)
     
     return render_template('booking_confirmation.html',
                          booking=booking_dict,
@@ -1409,16 +1417,20 @@ def process_parking_payment():
             db.session.add(reservation)
             db.session.commit()
             
-            # Return to the monument confirmation so the updated combined ticket is available.
-            session['parking_reservation_id'] = reservation.id
+            # Link paid parking to this booking so earlier reservations cannot mark it paid.
             booking_id = session.get('parking_booking_id') or session.get('booking_id')
             linked_booking = get_booking_by_id(booking_id) if booking_id else None
             if linked_booking and linked_booking.user_id == session['user_id'] and linked_booking.monument == reservation.monument and linked_booking.visit_date == reservation.reservation_date:
+                parking_reservations = dict(session.get('parking_reservations') or {})
+                parking_reservations[str(linked_booking.id)] = reservation.id
+                session['parking_reservations'] = parking_reservations
+                session['parking_reservation_id'] = reservation.id
                 return jsonify({
                     'success': True,
                     'redirect_url': url_for('booking_confirmation')
                 })
             
+            session['parking_reservation_id'] = reservation.id
             return jsonify({
                 'success': True,
                 'redirect_url': url_for('parking_confirmation')
@@ -1530,12 +1542,8 @@ def download_ticket(booking_id):
     qr_code_url = f"data:image/png;base64,{booking.qr_code}" if booking.qr_code else None
     booking_dict = booking.to_dict()
     booking_dict['user'] = {'name': booking.user.name, 'email': booking.user.email}
-    parking_reservation = ParkingReservation.query.filter_by(
-        user_id=booking.user_id,
-        monument=booking.monument,
-        reservation_date=booking.visit_date,
-        payment_status='completed'
-    ).order_by(ParkingReservation.created_at.desc()).first()
+    # Include only parking tied to this exact booking in the combined ticket.
+    parking_reservation = get_paid_parking_for_booking(booking)
     parking_qr_code_url = (
         f"data:image/png;base64,{parking_reservation.qr_code}"
         if parking_reservation and parking_reservation.qr_code else None
