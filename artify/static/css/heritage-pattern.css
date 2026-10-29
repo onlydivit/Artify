@@ -1,0 +1,17 @@
+/* Shared heritage inspired details used by the Artify pages. */
+:root {
+    --artify-terracotta: #9b513c;
+    --artify-terracotta-dark: #6a3028;
+    --artify-gold: #d2a85b;
+    --artify-olive: #65794f;
+}
+
+::selection {
+    color: #fff;
+    background: var(--artify-terracotta);
+}
+
+:focus-visible {
+    outline: 3px solid var(--artify-gold);
+    outline-offset: 3px;
+}

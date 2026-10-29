@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -9,7 +9,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         body {
             font-family: 'Inter', 'Segoe UI', sans-serif;
-            background: #f0f2f5;
+            background: #f5efe3;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -28,12 +28,12 @@
         .print-bar h2 { font-size: 1.2rem; color: #333; font-weight: 700; }
         .print-btn {
             display: inline-flex; align-items: center; gap: 0.5rem;
-            padding: 0.7rem 1.5rem; background: #667eea; color: white;
+            padding: 0.7rem 1.5rem; background: #9b513c; color: white;
             border: none; border-radius: 8px; font-size: 0.95rem;
             font-weight: 600; cursor: pointer; text-decoration: none;
             transition: background 0.2s;
         }
-        .print-btn:hover { background: #5a6fd6; }
+        .print-btn:hover { background: #82402f; }
         .back-btn {
             display: inline-flex; align-items: center; gap: 0.5rem;
             padding: 0.7rem 1.2rem; background: white; color: #555;
@@ -54,7 +54,7 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.12);
         }
         .ticket-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #9b513c 0%, #6a3028 100%);
             padding: 2.5rem 2.5rem 2rem;
             color: white;
             position: relative;
@@ -82,7 +82,7 @@
         .ticket-body { padding: 2rem 2.5rem; }
 
         .monument-title {
-            font-size: 1.8rem; font-weight: 800; color: #1a1a2e;
+            font-size: 1.8rem; font-weight: 800; color: #352820;
             margin-bottom: 0.3rem;
         }
         .booking-ref {
@@ -96,7 +96,7 @@
             gap: 1.5rem;
             margin-bottom: 2rem;
             padding: 1.5rem;
-            background: #f8f9ff;
+            background: #fbf7ef;
             border-radius: 12px;
         }
         .info-item .label {
@@ -104,7 +104,7 @@
             letter-spacing: 0.08em; font-weight: 600; margin-bottom: 0.35rem;
         }
         .info-item .value {
-            font-size: 1rem; font-weight: 700; color: #1a1a2e;
+            font-size: 1rem; font-weight: 700; color: #352820;
         }
 
         .divider {
@@ -118,7 +118,7 @@
             position: absolute;
             top: -12px;
             width: 24px; height: 24px;
-            background: #f0f2f5;
+            background: #f5efe3;
             border-radius: 50%;
         }
         .divider::before { left: -32px; }
@@ -128,7 +128,7 @@
         .qr-section { flex-shrink: 0; text-align: center; }
         .qr-wrapper {
             padding: 12px; background: white;
-            border: 2px solid #667eea;
+            border: 2px solid #9b513c;
             border-radius: 12px; display: inline-block;
         }
         .qr-wrapper img { width: 130px; height: 130px; display: block; }
@@ -143,19 +143,23 @@
         }
         .detail-row:last-child { border-bottom: none; }
         .detail-row .dl { color: #666; font-weight: 500; }
-        .detail-row .dv { font-weight: 700; color: #1a1a2e; }
-        .amount-highlight { color: #667eea !important; font-size: 1.05rem !important; }
+        .detail-row .dv { font-weight: 700; color: #352820; }
+        .amount-highlight { color: #9b513c !important; font-size: 1.05rem !important; }
 
         .badge-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
         .badge {
             padding: 0.3rem 0.75rem; border-radius: 20px;
             font-size: 0.78rem; font-weight: 600;
         }
-        .badge-green { background: #e8f5e9; color: #2e7d32; }
-        .badge-blue { background: #e3f2fd; color: #1565c0; }
+        .badge-green { background: #e6eadb; color: #526842; }
+        .badge-blue { background: #f1e3c7; color: #75402f; }
+        .parking-ticket { margin: 1.5rem 0; padding: 1.25rem 1.5rem; background: #f1f8f4; border: 1px solid #c8ceb1; border-radius: 12px; }
+        .parking-ticket h3 { color: #526842; margin-bottom: 0.75rem; font-size: 1rem; }
+        .parking-qr { display: flex; align-items: center; gap: 1rem; margin-top: 1rem; }
+        .parking-qr img { width: 110px; height: 110px; padding: 0.35rem; background: white; border-radius: 8px; }
 
         .ticket-footer {
-            background: #f8f9ff;
+            background: #fbf7ef;
             padding: 1.2rem 2.5rem;
             font-size: 0.8rem; color: #999;
             text-align: center;
@@ -170,6 +174,7 @@
             .divider::before, .divider::after { background: white; }
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/heritage-pattern.css') }}">
 </head>
 <body>
     <div class="print-bar">
@@ -202,9 +207,27 @@
                 </div>
                 <div class="info-item">
                     <div class="label">Payment Status</div>
-                    <div class="value" style="color:#4caf50;">{{ booking.payment_status | title }}</div>
+                    <div class="value" style="color:#65794f;">{{ booking.payment_status | title }}</div>
                 </div>
             </div>
+
+            <!-- Add paid parking details and its QR code to the combined ticket. -->
+            {% if parking_reservation %}
+            <div class="parking-ticket">
+                <h3>🅿️ Paid Parking Reservation</h3>
+                <div class="detail-row"><span class="dl">Slot</span><span class="dv">{{ parking_reservation.slot_id }}</span></div>
+                <div class="detail-row"><span class="dl">Vehicle</span><span class="dv">{{ parking_reservation.vehicle_type | title }} · {{ parking_reservation.vehicle_number }}</span></div>
+                <div class="detail-row"><span class="dl">Driver</span><span class="dv">{{ parking_reservation.driver_name }}</span></div>
+                <div class="detail-row"><span class="dl">Parking duration</span><span class="dv">{{ parking_reservation.duration }} hours</span></div>
+                <div class="detail-row"><span class="dl">Parking payment</span><span class="dv">Paid · ₹{{ "%.2f"|format(parking_reservation.amount) }} ({{ parking_reservation.payment_method | title if parking_reservation.payment_method else "—" }})</span></div>
+                {% if parking_qr_code %}
+                <div class="parking-qr">
+                    <img src="{{ parking_qr_code }}" alt="Parking reservation QR code">
+                    <span>Show this QR code at the parking entrance.</span>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
 
             <hr class="divider">
 

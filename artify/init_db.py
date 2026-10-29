@@ -31,6 +31,9 @@ def init_directories():
 
 def create_admin_user():
     """Create an admin user"""
+    if User.get_by_email('admin@artify.com'):
+        print("Admin user already exists; keeping the existing account.")
+        return
     admin = User(
         name='Admin',
         email='admin@artify.com',
@@ -47,10 +50,9 @@ def init_database():
     print("Creating required directories...")
     init_directories()
     
-    # Drop and recreate all tables
-    print("Dropping and recreating tables...")
+    # Create missing tables without deleting existing accounts or bookings.
+    print("Creating missing tables...")
     with app.app_context():
-        db.drop_all()
         db.create_all()
         
         # Create admin user

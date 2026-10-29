@@ -13,7 +13,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #9b513c 0%, #6a3028 100%);
             min-height: 100vh;
             color: white;
         }
@@ -201,7 +201,7 @@
 
         .summary-section h4 {
             margin-bottom: 0.8rem;
-            color: #ffd700;
+            color: #d2a85b;
             font-size: 1.1rem;
         }
 
@@ -212,7 +212,7 @@
         }
 
         .summary-item.discount {
-            color: #4CAF50;
+            color: #65794f;
             font-size: 0.9rem;
         }
 
@@ -234,7 +234,7 @@
         }
 
         .summary-item.total strong {
-            color: #ffd700;
+            color: #d2a85b;
         }
 
         .fee-summary {
@@ -313,6 +313,7 @@
             margin-bottom: 0.2rem;
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/heritage-pattern.css') }}">
 </head>
 <body>
     <nav class="navbar">
@@ -345,6 +346,10 @@
                 <div class="summary-item">
                     <span>Date:</span>
                     <span>{{ booking.date }}</span>
+                </div>
+                <div class="summary-item">
+                    <span>Visitor category:</span>
+                    <span>{{ 'Foreign visitor' if booking.nationality == 'foreign' else 'Indian visitor' }}</span>
                 </div>
                 <div class="summary-item">
                     <span>Time Slot:</span>

@@ -14,7 +14,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #9b513c 0%, #6a3028 100%);
             min-height: 100vh;
             color: white;
         }
@@ -193,12 +193,12 @@
         .student-checkbox input[type="checkbox"] {
             width: 20px;
             height: 20px;
-            accent-color: #764ba2;
+            accent-color: #6a3028;
         }
 
         .student-notice {
             background: rgba(255, 255, 255, 0.1);
-            border-left: 4px solid #ffd700;
+            border-left: 4px solid #d2a85b;
             padding: 1rem;
             margin-top: 0.5rem;
             font-size: 0.95rem;
@@ -210,13 +210,13 @@
         }
 
         .student-notice i {
-            color: #ffd700;
+            color: #d2a85b;
             font-size: 1.2rem;
         }
 
         .discount-badge {
-            background: #ffd700;
-            color: #764ba2;
+            background: #d2a85b;
+            color: #6a3028;
             padding: 0.3rem 0.6rem;
             border-radius: 15px;
             font-size: 0.8rem;
@@ -301,7 +301,7 @@
         }
 
         .lang-select option {
-            background: #764ba2;
+            background: #6a3028;
             color: white;
         }
 
@@ -335,7 +335,7 @@
         .service-option input[type="checkbox"] {
             width: 20px;
             height: 20px;
-            accent-color: #764ba2;
+            accent-color: #6a3028;
         }
 
         .service-notice {
@@ -345,8 +345,8 @@
         }
 
         .price-badge {
-            background: #ffd700;
-            color: #764ba2;
+            background: #d2a85b;
+            color: #6a3028;
             padding: 0.3rem 0.6rem;
             border-radius: 15px;
             font-size: 0.8rem;
@@ -361,8 +361,14 @@
             margin-bottom: 2rem;
         }
 
+        .monument-fees-table-wrap { overflow-x: auto; margin: 1rem 0 1.5rem; }
+        .monument-fees-table { width: 100%; border-collapse: collapse; min-width: 420px; }
+        .monument-fees-table th, .monument-fees-table td { padding: 0.65rem 0.75rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,.18); }
+        .monument-fees-table th { color: #f0ce83; }
+        .monument-fees-table-wrap small { display: block; margin-top: 0.5rem; }
+
         .pricing-info h3 {
-            color: #ffd700;
+            color: #d2a85b;
             margin-bottom: 1rem;
             font-size: 1.2rem;
         }
@@ -381,7 +387,7 @@
 
         .price-item span:last-child {
             font-weight: bold;
-            color: #ffd700;
+            color: #d2a85b;
         }
 
         .student-price {
@@ -529,7 +535,7 @@
 
         .fees-info .fee-amount {
             font-weight: bold;
-            color: #4CAF50;
+            color: #65794f;
         }
 
         .form-group select {
@@ -557,11 +563,12 @@
         }
 
         .form-group select option {
-            background: #764ba2;
+            background: #6a3028;
             color: white;
             padding: 0.8rem;
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/heritage-pattern.css') }}">
 </head>
 <body>
     <nav class="navbar">
@@ -615,6 +622,18 @@
                 <form method="POST" action="{{ url_for('payment_page') }}" id="bookingForm">
                     <div class="pricing-info">
                         <h3 data-translate="pricing-title">Pricing Information</h3>
+                        <!-- Show each monument's configured entry fee for both visitor categories. -->
+                        <div class="monument-fees-table-wrap">
+                            <table class="monument-fees-table">
+                                <thead><tr><th>Monument</th><th>Indian visitors</th><th>Foreign visitors</th></tr></thead>
+                                <tbody>
+                                    {% for monument_name, fees in monument_fees.items() %}
+                                    <tr><td>{{ monument_name }}</td><td>{% if fees.indian == 0 %}Free{% else %}₹{{ fees.indian }}{% endif %}</td><td>{% if fees.foreign == 0 %}Free{% else %}₹{{ fees.foreign }}{% endif %}</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <small>Entry fee per visitor. The fee shown at payment depends on the visitor category selected below.</small>
+                        </div>
                         
                         <div class="price-item student-price">
                             <span data-translate="student-discount">Student Discount</span>
@@ -670,6 +689,17 @@
                             <option value="Raj Ghat">Raj Ghat</option>
                             <option value="Jantar Mantar">Jantar Mantar</option>
                             <option value="Rashtrapati Bhavan">Rashtrapati Bhavan</option>
+                            <option value="Purana Qila">Purana Qila (Old Fort)</option>
+                            <option value="National War Memorial">National War Memorial</option>
+                            <option value="Lodi Gardens">Lodi Gardens</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="nationality">Visitor category</label>
+                        <select id="nationality" name="nationality" required>
+                            <option value="">Select visitor category</option>
+                            <option value="indian">Indian visitor</option>
+                            <option value="foreign">Foreign visitor</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1109,6 +1139,8 @@
                         document.getElementById('selected_time_slot').value = slot;
                     }
 
+                    const MONUMENT_FEES = {{ monument_fees|tojson }};
+
                     // Add form validation
                     document.getElementById('bookingForm').addEventListener('submit', async function(e) {
                         e.preventDefault();
@@ -1124,6 +1156,7 @@
                             const formData = new FormData(this);
                             const bookingData = {
                                 monument: formData.get('monument'),
+                                nationality: formData.get('nationality'),
                                 date: formData.get('date'),
                                 time_slot: formData.get('time_slot'),
                                 num_visitors: parseInt(formData.get('visitors')),
@@ -1135,14 +1168,15 @@
                                 name: formData.get('name'),
                                 email: formData.get('email'),
                                 age: parseInt(formData.get('age')),
-                                base_amount: 40, // Updated base amount
-                                final_amount: calculateFinalAmount(
-                                    parseInt(formData.get('visitors')),
-                                    formData.get('is_student') === 'on',
-                                    formData.get('need_guide') === 'on',
-                                    formData.get('camera_required') === 'on'
-                                )
+                                base_amount: MONUMENT_FEES[formData.get('monument')][formData.get('nationality')],
+                                final_amount: 0
                             };
+                            bookingData.final_amount = calculateFinalAmount(
+                                bookingData.base_amount,
+                                parseInt(formData.get('visitors')) || 0,
+                                formData.get('is_student') === 'on',
+                                bookingData.need_guide
+                            );
 
                             // Validate required fields
                             if (!bookingData.time_slot || !bookingData.id_number) {
@@ -1178,9 +1212,8 @@
                         }
                     });
 
-                    function calculateFinalAmount(visitors, isStudent, needGuide, needCamera) {
-                        const baseAmount = 40; // Updated base amount
-                        let totalAmount = baseAmount * (visitors + 1); // +1 for primary contact
+                    function calculateFinalAmount(baseAmount, visitors, isStudent, needGuide) {
+                        let totalAmount = baseAmount * (visitors + 1);
                         
                         // Apply student discount if applicable
                         if (isStudent) {
@@ -1189,12 +1222,7 @@
                         
                         // Add guide fee if needed
                         if (needGuide) {
-                            totalAmount += 50; // Updated guide fee
-                        }
-                        
-                        // Add camera fee if needed
-                        if (needCamera) {
-                            totalAmount += 50; // Updated camera fee
+                            totalAmount += 300;
                         }
                         
                         return totalAmount;
@@ -1276,7 +1304,7 @@
                                     color: white;
                                 }
                                 .confirm-btn {
-                                    background: #4CAF50;
+                                    background: #65794f;
                                     color: white;
                                 }
                             `;
@@ -1429,6 +1457,12 @@
                             console.error('Monument not found:', monument);
                             return;
                         }
+                        const configuredFees = MONUMENT_FEES[monument];
+                        if (configuredFees) {
+                            const indianPrice = configuredFees.indian ? `₹${configuredFees.indian}` : 'Free';
+                            const foreignPrice = configuredFees.foreign ? `₹${configuredFees.foreign}` : 'Free';
+                            monumentInfo.entryFee = `Indian visitors: ${indianPrice}; Foreign visitors: ${foreignPrice}`;
+                        }
 
                         // Create and show the modal
                         const modal = document.createElement('div');
@@ -1493,58 +1527,11 @@
                     }
 
                     function updateFees() {
-                        const monument = document.getElementById('monument').value;
-                        const nationality = document.querySelector('input[name="nationality"]:checked').value;
-                        const age = parseInt(document.getElementById('age').value) || 0;
-                        const camera = document.querySelector('input[name="camera"]:checked').value;
-                        const student = document.querySelector('input[name="student"]:checked').value;
-                        const studentId = document.getElementById('studentId').value;
-
-                        let baseFee = monumentFees[monument][nationality];
-                        let discount = 0;
-                        let cameraFee = 0;
-                        let breakdown = [];
-
-                        // Update the dynamic entry fee display
-                        document.getElementById('dynamicEntryFee').textContent = `₹${baseFee}`;
-
-                        // Add base fee to breakdown
-                        breakdown.push(`Base Fee: ₹${baseFee}`);
-
-                        // Apply senior citizen discount (10% for age >= 65)
-                        if (age >= 65) {
-                            discount = baseFee * 0.1;
-                            breakdown.push(`Senior Citizen Discount (10%): -₹${discount}`);
-                        }
-
-                        // Apply student discount (30% with valid ID)
-                        if (student === 'yes' && studentId) {
-                            const studentDiscount = baseFee * 0.3;
-                            discount += studentDiscount;
-                            breakdown.push(`Student Discount (30%): -₹${studentDiscount}`);
-                        }
-
-                        // Add camera fee if selected
-                        if (camera === 'yes') {
-                            cameraFee = 300;
-                            breakdown.push(`Camera Fee: ₹${cameraFee}`);
-                        }
-
-                        // Calculate total
-                        const total = baseFee - discount + cameraFee;
-
-                        // Update fee breakdown
-                        document.getElementById('feeBreakdown').innerHTML = breakdown.join('<br>');
-                        document.getElementById('totalFee').textContent = total;
+                        // The per-monument fee table is server-rendered from MONUMENT_FEES.
+                        // The selected visitor category is applied when the form is submitted.
                     }
 
-                    // Add event listeners for all fee-affecting inputs
                     document.getElementById('monument').addEventListener('change', updateFees);
-                    document.getElementById('age').addEventListener('input', updateFees);
-                    document.getElementById('studentId').addEventListener('input', updateFees);
-
-                    // Initialize fees on page load
-                    document.addEventListener('DOMContentLoaded', updateFees);
 
                     function updateEntryFee() {
                         const monumentSelect = document.getElementById('monument');
@@ -1572,11 +1559,6 @@
 
                     // Initialize form submission handler
                     document.addEventListener('DOMContentLoaded', function() {
-                        const form = document.querySelector('form');
-                        if (form) {
-                            form.addEventListener('submit', handleFormSubmission);
-                        }
-                        
                         // Initialize entry fee display
                         updateEntryFee();
                     });

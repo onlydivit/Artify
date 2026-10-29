@@ -140,7 +140,9 @@ class TimeSlot(db.Model):
 
 def init_db(app):
     # Database configuration
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///artify.db'
+    # Keep the database in the app's instance directory so it survives restarts
+    # and does not depend on the shell's current working directory.
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + app.instance_path.replace('\\', '/') + '/artify.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     # Initialize database
@@ -148,11 +150,9 @@ def init_db(app):
     
     # Create all tables
     with app.app_context():
-        # Drop all tables
-        db.drop_all()
-        # Create all tables
+        # Create missing tables while preserving existing users and bookings.
         db.create_all()
-        print("Database tables recreated successfully!")
+        print("Database tables initialized successfully!")
 
 def register_user(name, email, password):
     """Register a new user"""
